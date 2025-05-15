@@ -1,8 +1,6 @@
 import tkinter as tk
-import Form_Login
 import Form_Note
 import Form_Guest
-import Class_User
 
 def show_user_form(user):
     # Xây dựng khung
@@ -32,6 +30,11 @@ def show_user_form(user):
 
     # Nút đăng xuất (logout)
     
+    def logout():
+        form_chinh.destroy()
+        Form_Guest.show_user_form()
+
+    
     tk.Label(logout_new_frame,
              text=f"Xin chào, {user.username}",
              font=("Times New Roman", 16),
@@ -40,7 +43,7 @@ def show_user_form(user):
     logout_button = tk.Button(logout_new_frame,
                              text="Logout",
                              font=("Times New Roman", 16),
-                             command=lambda:Form_Guest.show_user_form()
+                             command=lambda:logout()
                              )
     logout_button.grid(row=1, column=2, padx=10, pady=10, sticky="e")
 

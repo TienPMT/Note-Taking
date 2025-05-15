@@ -10,7 +10,7 @@ def dangNhap(current_form=None):
         current_form.destroy()
     
     # Xây dựng Form
-    login = tk.Toplevel()
+    login = tk.Tk()
     login.title("Login")
     login.geometry("360x280")
     login.resizable(width=False, height=False)
@@ -41,8 +41,6 @@ def dangNhap(current_form=None):
         if user:
             messagebox.showinfo("Succesfull!", "Đăng nhập thành công")
             login.destroy()
-            if current_form:
-                current_form.destroy()  # đóng form guest nếu có
             Form_User.show_user_form(user)
         else:
             messagebox.showerror("Error!", "Đăng nhập thất bại!")
