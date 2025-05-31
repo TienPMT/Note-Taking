@@ -18,7 +18,7 @@ class User:
 
     @staticmethod
     def from_dict(data):
-        user = User(data['username'], data['password'])
+        user = User(data['username'], data['password'], data.get('role', 'user'))
         user.notes = [Note.from_dict(n) for n in data.get('notes', [])] 
         return user
 

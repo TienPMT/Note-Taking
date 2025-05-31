@@ -106,8 +106,12 @@ def show_main_form():
     tk.Label(root, text="Chào mừng đến với Note App", font=("Arial", 16, "bold")).pack(pady=20)
 
     def on_login_success(user):
-        from Form_Note import Form_Note
-        Form_Note(user)
+        if user.role == 'admin':
+            from Form_Admin import Form_Admin
+            Form_Admin(user)
+        else:
+            from Form_Note import Form_Note
+            Form_Note(user)
 
     tk.Button(root, text="Đăng nhập / Đăng ký", width=25, command=lambda: open_login(root, on_login_success)).pack(pady=10)
     tk.Button(root, text="Dùng thử với Guest", width=25, command=lambda: start_as_guest(root)).pack(pady=10)

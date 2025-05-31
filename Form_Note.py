@@ -9,16 +9,22 @@ from Class_Guest import Guest
 
 
 class Form_Note:
-    
     def __init__(self, user):
         self.user = user
         self.username = user.username
         self.user_manager = UserManage()
         self.notes = []
-        user_data = self.user_manager.get_user_data(self.username)
-        if user_data and 'notes' in user_data:  
-            self.notes = [Note.from_dict(n) for n in user_data['notes']]
-            self.user.notes = self.notes
+        
+        try:
+            user_data = self.user_manager.get_user_data(self.username)
+            if user_data and 'notes' in user_data:
+                # Thêm bộ lọc cho note hợp lệ
+                self.notes = [Note.from_dict(n) for n in user_data['notes'] if isinstance(n, dict)]
+                self.user.notes = self.notes
+        except Exception as e:
+            messagebox.showerror("Lỗi", f"Không thể tải dữ liệu note: {str(e)}")
+            self.notes = []
+    
         self.is_guest = isinstance(user, Guest)
 
         self.window = tk.Tk() 

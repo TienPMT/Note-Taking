@@ -7,6 +7,12 @@
                 "content": "trung\nthit\nca",
                 "created_at": "2025-05-31T22:00:47.615551",
                 "updated_at": "2025-05-31T22:00:47.615551"
+            },
+            {
+                "title": "quanao",
+                "content": "somi\nquantay\naothun",
+                "created_at": "2025-06-01T00:49:58.622407",
+                "updated_at": "2025-06-01T00:49:58.622407"
             }
         ],
         "role": "user"
@@ -22,5 +28,12 @@
             }
         ],
         "role": "user"
+    },
+    "admin": {
+        "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+        "notes": [
+            {}
+        ],
+        "role": "admin"
     }
 }

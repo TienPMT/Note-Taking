@@ -25,9 +25,13 @@ class Note:
 
     @staticmethod
     def from_dict(data):
-        return Note(
-            data['title'],
-            data['content'],
-            data.get('created_at'),
-            data.get('updated_at')
-        )   
+        # Thêm kiểm tra và giá trị mặc định
+        title = data.get('title', 'Không có tiêu đề')
+        content = data.get('content', '')
+        created_at = data.get('created_at', '')
+        updated_at = data.get('updated_at', '')
+        
+        note = Note(title, content)
+        note.created_at = created_at
+        note.updated_at = updated_at
+        return note   

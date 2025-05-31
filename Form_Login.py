@@ -29,10 +29,21 @@ def dangNhap(parent_window, on_success):
 
         user_manager = UserManage()
         if user_manager.login(username, password):
-            messagebox.showinfo("Thành công", f"Đăng nhập thành công! Chào {username}")
+            # Lấy thông tin user từ database
+            user_data = user_manager.users.get(username)
+            role = user_data.get('role', 'user')
+            # Tạo đối tượng User với role tương ứng
+            user = User(username, password, role)
+            
+            # Thông báo tùy theo role
+            if user.role == 'admin':
+                messagebox.showinfo("Thành công", f"Đăng nhập ADMIN thành công! Chào {username}")
+            else:
+                messagebox.showinfo("Thành công", f"Đăng nhập thành công! Chào {username}")
+        
+            # Đóng cửa sổ và gọi callback
             login_window.destroy()
             parent_window.destroy()
-            user = User(username, password)
             on_success(user)
         else:
             messagebox.showerror("Lỗi", "Tên đăng nhập hoặc mật khẩu không đúng")
