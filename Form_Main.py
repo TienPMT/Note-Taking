@@ -82,7 +82,11 @@ def open_login(main_window, on_success):
             return
         manager = UserManage()
         if manager.login(username, password):
-            user = User(username, password)
+            # Lấy thông tin user từ database
+            user_data = manager.users.get(username)
+            role = user_data.get('role', 'user')
+            # Tạo đối tượng User với role tương ứng
+            user = User(username, password, role)
             login_window.destroy()
             main_window.destroy()
             on_success(user)
