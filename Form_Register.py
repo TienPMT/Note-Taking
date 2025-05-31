@@ -1,51 +1,62 @@
+# -*- coding: utf-8 -*-
+
 import tkinter as tk
+from tkinter import messagebox
+from Class_UserManage import UserManage
+from Class_User import User
+from Form_Note import Form_Note
 
-def dangKy(current_form=None):
-    if (current_form):
-        current_form.destroy()
-        
-    # Xây dựng Form
-    register = tk.Tk()
-    register.title("Register")
-    register.geometry("360x310")
-    register.resizable(width=False, height=False)
+def dangKy(parent_window, on_success):
+    register_window = tk.Toplevel(parent_window)
+    register_window.title("Đăng ký")
+    register_window.geometry("300x250")
+    register_window.resizable(False, False)
 
-    # Header
-    dangnhap_label = tk.Label(register, text="Đăng ký", font=("Times New Roman",20,"bold"))
-    dangnhap_label.grid(row=0, column=0, columnspan=2, pady=10)
+    tk.Label(register_window, text="Tên đăng nhập:").pack(pady=5)
+    entry_username = tk.Entry(register_window)
+    entry_username.pack(pady=5)
 
-    # Username
-    taikhoan_label = tk.Label(register, text="Username:", font=("Times New Roman", 11), anchor="w")
-    taikhoan_label.grid(row=1, column=0, padx=10, pady=5, sticky="we")
+    tk.Label(register_window, text="Mật khẩu:").pack(pady=5)
+    entry_password = tk.Entry(register_window, show="*")
+    entry_password.pack(pady=5)
 
-    taikhoan_entry = tk.Entry(register, font=("Times New Roman", 11))
-    taikhoan_entry.grid(row=1, column=1, padx=10, pady=5, sticky="we")
+    tk.Label(register_window, text="Xác nhận mật khẩu:").pack(pady=5)
+    entry_confirm_password = tk.Entry(register_window, show="*")
+    entry_confirm_password.pack(pady=5)
 
-    # Password
-    password_label = tk.Label(register, text="Password:", font=("Times New Roman", 11), anchor="w")
-    password_label.grid(row=2, column=0, padx=10, pady=5, sticky="we")
-    password_entry = tk.Entry(register, font=("Times New Roman", 11))
-    password_entry.grid(row=2, column=1, padx=10, pady=5, sticky="we")
-    # Xác nhận Password
-    password_check_label = tk.Label(register, text="Nhập lại Password:", font=("Times New Roman", 11), anchor="w")
-    password_check_label.grid(row=3, column=0, padx=10, pady=5, sticky="we")
-    password_check_entry = tk.Entry(register, font=("Times New Roman", 11))
-    password_check_entry.grid(row=3, column=1, padx=10, pady=5, sticky="we")
+    def register_action():
+        username = entry_username.get().strip()
+        password = entry_password.get().strip()
+        confirm_password = entry_confirm_password.get().strip()
 
-    # Button đăng ký
-    dangky_button = tk.Button(register, text="Register", font=("Times New Roman", 11))
-    dangky_button.grid(row=4,column=1, padx=10, pady=10)
-    
-    # Link tới form đăng nhập
-    tk.Label(register, text="Bạn đã có tài khoản? Đăng nhập tại đây!", font=("Times New Roman", 11,"bold")).grid(row=5,column=0, columnspan=2,padx=10, pady=10)
-    dangnhap_button = tk.Button(register, text="Login", font=("Times New Roman", 11), command=lambda:open_login(register))
-    dangnhap_button.grid(row=6,column=1, padx=10, pady=10)
-    
-    # Chạy giao diện
-    register.mainloop()
+        if not username or not password or not confirm_password:
+            messagebox.showwarning("Lỗi", "Vui lòng nhập đầy đủ thông tin")
+            return
 
+        if password != confirm_password:
+            messagebox.showwarning("Lỗi", "Mật khẩu xác nhận không khớp")
+            return
 
-def open_login(current_form):
-    # Import cục bộ để tránh circular import
-    import Form_Login
-    Form_Login.dangNhap(current_form)
+        user_manager = UserManage()
+        if user_manager.find_user(username):
+            messagebox.showwarning("Lỗi", "Tên đăng nhập đã tồn tại")
+            return
+
+        if user_manager.add_user(username, password):
+            messagebox.showinfo("Thành công", "Đăng ký thành công! Đang đăng nhập...")
+            register_window.destroy()
+            parent_window.destroy()
+            user = User(username, password)
+            on_success(user)
+        else:
+            messagebox.showerror("Lỗi", "Đăng ký thất bại")
+
+    tk.Button(register_window, text="Đăng ký", width=25, bg="#28a745", fg="white", command=register_action).pack(pady=10)
+    tk.Button(register_window, text="Hủy", width=25, bg="#dc3545", fg="white", command=register_window.destroy).pack(pady=5)
+
+    def back():
+        register_window.destroy()
+        if parent_window:
+            parent_window.deiconify()
+
+    tk.Button(register_window, text="Quay lại đăng nhập", width=25, bg="#6c757d", fg="white", command=back).pack(pady=5)

@@ -1,4 +1,5 @@
-import Form_Guest
+# -*- coding: utf-8 -*-
+from Form_Main import show_main_form
 
 if __name__ == "__main__":
-    Form_Guest.show_user_form()
+    show_main_form()

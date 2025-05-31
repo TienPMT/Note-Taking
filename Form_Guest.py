@@ -1,66 +1,68 @@
 import tkinter as tk
 import Form_Login
+import Form_Register
 import Form_Note
+import Form_SearchNote
+from Guest_Account import Guest
 
-def show_user_form():
-    # Xây dựng khung
-    form_chinh = tk.Tk()
-    form_chinh.title("Note-Taking")
-    form_chinh.geometry("360x480")
-    form_chinh.resizable(False, False)
-    form_chinh.configure(bg="white")
+def show_guest_form():
+    guest_window = tk.Tk()
+    guest_window.title("Guest - Note Taking")
+    guest_window.geometry("360x480")
+    guest_window.resizable(False, False)
+    guest_window.configure(bg="white")
 
-    # Login và thêm mới Frame
-    login_new_frame = tk.Frame(form_chinh,
-                               bg="white")
-    login_new_frame.pack(fill="x")
+    # Frame chứa các nút: Thêm mới, Đăng nhập, Đăng ký
+    button_frame = tk.Frame(guest_window, bg="white")
+    button_frame.pack(fill="x", pady=10)
+    button_frame.columnconfigure(0, weight=1)
+    button_frame.columnconfigure(1, weight=1)
+    button_frame.columnconfigure(2, weight=1)
 
-    # Cấu hình lưới cho frame
-    login_new_frame.columnconfigure(0, weight=1)
-    login_new_frame.columnconfigure(1, weight=1)
-    login_new_frame.columnconfigure(2, weight=1)
+    # Nút thêm mới (chức năng Guest)
+    new_button = tk.Button(button_frame, text="+", font=("Times New Roman", 16),
+                           command=lambda: Form_Note.show_note())
+    new_button.grid(row=0, column=0, padx=10, sticky="w")
 
-    # Nút thêm mới (New)
-    new_button = tk.Button(login_new_frame,
-                           text="+",
-                           font=("Times New Roman", 16),
-                           command=lambda:Form_Note.show_note()
-                           )
-    new_button.grid(row=0, column=0, padx=10, pady=10, sticky="w")
+    # Nút Đăng nhập
+    def on_login_success(user):
+        guest_window.destroy()
+        from Form_User import show_user_form
+        show_user_form(user)
 
-    # Nút đăng nhập (Login)
-    login_button = tk.Button(login_new_frame,
-                             text="Login",
-                             font=("Times New Roman", 16),
-                             command=lambda:Form_Login.dangNhap(current_form=form_chinh)
-                             )
-    login_button.grid(row=0, column=2, padx=10, pady=10, sticky="e")
+    login_button = tk.Button(button_frame, text="Đăng nhập", font=("Times New Roman", 16),
+                             command=lambda: Form_Login.dangNhap(guest_window, on_login_success))
+    login_button.grid(row=0, column=1, padx=10)
 
+    # Nút Đăng ký
+    def on_register_success(user):
+        guest_window.destroy()
+        from Form_User import show_user_form
+        show_user_form(user)
 
-    # Header - tiêu đề app
-    tk.Label(form_chinh,
-             text="Note-Taking",
-             font=("Times New Roman", 30, "bold"),
-             bg="white"
-             ).pack()
+    register_button = tk.Button(button_frame, text="Đăng ký", font=("Times New Roman", 16),
+                                command=lambda: Form_Register.dangKy(guest_window, on_register_success))
+    register_button.grid(row=0, column=2, padx=10, sticky="e")
 
-    # Find Frame
-    find_frame = tk.Frame(form_chinh,
-                          bg="white")
-    find_frame.pack()
+    # Tiêu đề
+    tk.Label(guest_window, text="Note-Taking (Guest)", font=("Times New Roman", 30, "bold"), bg="white").pack(pady=20)
 
-    # Thanh tìm kiếm
-    find_entry = tk.Entry(find_frame,
-                          font=("Times New Roman", 16),
-                          bg="ghostwhite"
-                          )
-    find_entry.grid(row=2, column=0, padx=10, pady=10)
+    # Frame tìm kiếm
+    find_frame = tk.Frame(guest_window, bg="white")
+    find_frame.pack(pady=10)
 
-    find_button = tk.Button(find_frame,
-                            text="Search",
-                            font=("Times New Roman", 16)
-                            )
-    find_button.grid(row=2, column=1, columnspan=2, padx=10, pady=10)
-    
-    # Chạy
-    form_chinh.mainloop()
+    find_entry = tk.Entry(find_frame, font=("Times New Roman", 16), bg="ghostwhite")
+    find_entry.grid(row=0, column=0, padx=10)
+
+    def do_guest_search():
+        guest = Guest()
+        Form_SearchNote.search_note(guest)
+
+    find_button = tk.Button(find_frame, text="Search", font=("Times New Roman", 16),
+                            command=do_guest_search)
+    find_button.grid(row=0, column=1, padx=10)
+
+    guest_window.mainloop()
+
+if __name__ == "__main__":
+    show_guest_form()

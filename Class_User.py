@@ -1,22 +1,13 @@
-### models/user.py
-import Class_Note
+# -*- coding: utf-8 -*-
+from Class_Note import Note  
 
 class User:
-    def __init__(self, username, password, role='normal'):
+    def __init__(self, username, password, role="user"):
         self.username = username
         self.password = password
-        self.role = role
         self.notes = []
+        self.role = role
 
-    def taoNote(self, title, content):
-        note = Class_Note(title, content)
-        self.notes.append(note)
-        return note
-
-    def timNote(self, keyword):
-        return [note for note in self.notes if keyword in note.title or keyword in note.content]
-
-    # Lưu vào JSON
     def to_dict(self):
         return {
             'username': self.username,
@@ -25,10 +16,9 @@ class User:
             'notes': [note.to_dict() for note in self.notes]
         }
 
-    # Đọc từ JSON
     @staticmethod
     def from_dict(data):
-        from Class_Note import Note
-        user = User(data['username'], data['password'], data['role'])
-        user.notes = [Note.from_dict(note_data) for note_data in data.get('notes', [])]
+        user = User(data['username'], data['password'])
+        user.notes = [Note.from_dict(n) for n in data.get('notes', [])] 
         return user
+

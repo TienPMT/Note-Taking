@@ -1,4 +1,5 @@
-### models/admin.py
+# -*- coding: utf-8 -*-
+    
 import Class_User
 
 class Admin(Class_User):

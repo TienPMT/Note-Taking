@@ -1,20 +1,26 @@
-[
-    {
-        "username": "alice",
-        "password": "123456",
-        "role": "normal",
+{
+    "minhtien": {
+        "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
         "notes": [
             {
-                "title": "Ghi chú 1",
-                "content": "Nội dung 1",
-                "created_at": "2025-05-15 10:00:00"
+                "title": "dicho",
+                "content": "trung\nthit\nca",
+                "created_at": "2025-05-31T22:00:47.615551",
+                "updated_at": "2025-05-31T22:00:47.615551"
             }
-        ]
+        ],
+        "role": "user"
     },
-    {
-        "username": "admin",
-        "password": "admin123",
-        "role": "admin",
-        "notes": []
+    "user02": {
+        "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+        "notes": [
+            {
+                "title": "quanao",
+                "content": "somi\nquan tay\nquan short\nao thun",
+                "created_at": "2025-05-31T22:02:02.653135",
+                "updated_at": "2025-05-31T22:02:02.653135"
+            }
+        ],
+        "role": "user"
     }
-]
+}

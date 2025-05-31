@@ -1,17 +1,19 @@
-### models/guest.py
-import Class_User
+from Class_User import User
+from Class_Note import Note
 
-class Guest(Class_User):
+class Guest:
     def __init__(self):
-        super().__init__('guest', '', 'guest')
+        self.username = "Guest"  
+        self.notes = []
 
-    def create_note(self, title, content):
+    def add_note(self, note):
         if len(self.notes) >= 1:
-            raise Exception("Guest chỉ được tạo 1 note. Vui lòng đăng nhập để tạo thêm.")
-        return super().create_note(title, content)
+            return False  
+        self.notes.append(note)
+        return True
 
     def upgrade_to_user(self, username, password):
-        from models.user import User
         new_user = User(username, password)
         new_user.notes = self.notes.copy()
         return new_user
+    

@@ -1,48 +1,105 @@
+# -*- coding: utf-8 -*-
 import tkinter as tk
-
-def show_note():
-    # Xây dựng form
-    note_form = tk.Tk()
-    note_form.title("<Name>")
-    note_form.geometry("360x480")
-    note_form.resizable(False, False)
-
-    # Cấu hình lưới cột
-    note_form.columnconfigure(0, weight=1)  # Cột đầu tiên chứa nút New
-    note_form.columnconfigure(1, weight=1)  # Cột giữa để giãn
-    note_form.columnconfigure(2, weight=1)  # Cột cuối cùng chứa nút Login
+from tkinter import messagebox
+from Class_Note import Note  
+from Form_NoteList import show_note_list
+from Form_SearchNote import search_note
+from Class_UserManage import UserManage
+from Class_Guest import Guest
 
 
-    # Tên note
-    note_title = tk.Label(note_form,
-                          text="Title",
-                          font=("Times New Roman", 16, "bold")
-                          )
-    note_title.grid(row=0, column=0, padx=10, pady=10)
+class Form_Note:
+    
+    def __init__(self, user):
+        self.user = user
+        self.username = user.username
+        self.user_manager = UserManage()
+        self.notes = []
+        user_data = self.user_manager.get_user_data(self.username)
+        if user_data and 'notes' in user_data:  
+            self.notes = [Note.from_dict(n) for n in user_data['notes']]
+            self.user.notes = self.notes
+        self.is_guest = isinstance(user, Guest)
 
-    note_title_entry = tk.Entry(note_form,
-                                font=("Times New Roman", 14)
-                                )
-    note_title_entry.grid(row=0, column=1, columnspan=2, padx=10, sticky="ew")
+        self.window = tk.Tk() 
+        self.window.title(f"Tạo ghi chú - {self.username}")
+        self.window.geometry("800x800")
+        self.window.configure(bg="#f4faff") 
+        
+        # Tiêu đề
+        tk.Label(self.window, text="Tiêu đề:", font=("Arial", 13, "bold"), bg="#f4faff").pack(pady=8)
+        self.entry_title = tk.Entry(self.window, width=60, font=("Arial", 13), bg="#ffffff", relief=tk.SOLID)
+        self.entry_title.pack(pady=5)
 
+        # Nội dung
+        tk.Label(self.window, text="Nội dung:", font=("Arial", 13, "bold"), bg="#f4faff").pack(pady=8)
+        self.text_content = tk.Text(self.window, height=20, width=70, font=("Arial", 13), bg="#ffffff", relief=tk.SOLID)
+        self.text_content.pack(pady=5)
 
-    # Nội dung
-    note_body = tk.Text(note_form,
-                         font=("Times New Roman", 14),
-                         height=15,
-                         width=50
-                         )
-    note_body.grid(row=1, column=0, columnspan=3, padx=10, pady=10)
+        # Nút lưu
+        tk.Button(self.window, text="💾 Lưu ghi chú", width=25, bg="#28a745", fg="white",
+                  font=("Arial", 12, "bold"), command=self.save_note).pack(pady=12)
 
-    # Nút Save
-    save_button = tk.Button(note_form,
-                            text="Save",
-                            font=("Times New Roman", 16, "bold"),
-                            relief="solid",
-                            bd=2
-                            )
-    save_button.grid(row=2, column=2, padx=10, pady=10)
+        # Đường phân cách
+        tk.Frame(self.window, height=2, bg="#cccccc").pack(fill="x", pady=8)
 
+        # Nút điều hướng
+        tk.Button(self.window, text="📋 Xem danh sách ghi chú", width=35, bg="#007bff", fg="white",
+                  font=("Arial", 12), command=self.go_to_list).pack(pady=5)
+        tk.Button(self.window, text="🔍 Tìm kiếm ghi chú", width=35, bg="#fd7e14", fg="white",
+                  font=("Arial", 12), command=self.go_to_search).pack(pady=5)
 
-    # Chạy giao diện
-    note_form.mainloop()
+        # Nếu là guest thì thêm nút đăng nhập / đăng ký
+        if self.is_guest:
+            tk.Button(self.window, text="🔑 Đăng nhập / Đăng ký", width=25, bg="#17a2b8", fg="white",
+                      font=("Arial", 12), command=self.open_login_register).pack(pady=10)
+
+        tk.Button(self.window, text="❌ Đóng", width=15, bg="#dc3545", fg="white",
+                  font=("Arial", 12), command=self.window.destroy).pack(pady=12)
+
+        self.window.mainloop()
+
+    def save_note(self):
+        title = self.entry_title.get().strip()
+        content = self.text_content.get("1.0", "end-1c").strip()
+
+        if not title or not content:
+            messagebox.showwarning("Thiếu thông tin", "Vui lòng nhập đầy đủ tiêu đề và nội dung.")
+            return
+
+        note = Note(title, content)
+
+        if self.is_guest:
+            if not self.user.add_note(note):
+                messagebox.showwarning("Giới hạn", "Tài khoản Guest chỉ được lưu 1 ghi chú. Vui lòng đăng ký để sử dụng thêm.")
+                return
+            self.notes = self.user.notes
+        else:
+            self.notes.append(note)
+            self.user.notes = self.notes
+            notes_dict_list = [n.to_dict() for n in self.notes]
+            self.user_manager.update_user_notes(self.username, notes_dict_list)
+
+        messagebox.showinfo("Thành công", "Ghi chú đã được lưu.") 
+        self.entry_title.delete(0, tk.END)
+        self.text_content.delete("1.0", tk.END)
+
+    def go_to_list(self):
+        self.window.withdraw()
+        show_note_list(self.user, self.window)
+    
+    def go_to_search(self):
+        self.window.withdraw()
+        search_note(self.user, self.window)
+
+    def open_login_register(self):
+        self.window.withdraw()
+        def on_login_success(user):
+            self.window.destroy()  
+            Form_Note(user)   
+
+        try:
+            from Form_Main import open_login
+            open_login(self.window, on_login_success)
+        except ImportError:
+           messagebox.showerror("Lỗi", "Không thể mở giao diện đăng nhập. Kiểm tra lại file Form_Main.py.")

@@ -1,66 +1,46 @@
+# -*- coding: utf-8 -*-
+
 import tkinter as tk
 from tkinter import messagebox
-import Class_UserManage
-import Form_User
-user_manager = Class_UserManage.UserManage()
-user_manager.docDuLieu()
+from Class_UserManage import UserManage
+from Class_User import User
+from Form_Note import Form_Note
 
-def dangNhap(current_form=None):
-    if (current_form):
-        current_form.destroy()
-    
-    # Xây dựng Form
-    login = tk.Tk()
-    login.title("Login")
-    login.geometry("360x280")
-    login.resizable(width=False, height=False)
+def dangNhap(parent_window, on_success):
+    login_window = tk.Toplevel(parent_window)
+    login_window.title("Đăng nhập")
+    login_window.geometry("300x230")
+    login_window.resizable(False, False)
 
-    # Header
-    dangnhap_label = tk.Label(login, text="Đăng nhập", font=("Times New Roman",20,"bold"))
-    dangnhap_label.grid(row=0, column=1, columnspan=2, pady=10)
+    tk.Label(login_window, text="Tên đăng nhập:").pack(pady=5)
+    entry_username = tk.Entry(login_window)
+    entry_username.pack(pady=5)
 
-    # Username
-    taikhoan_label = tk.Label(login, text="Username:", font=("Times New Roman", 11), anchor="w")
-    taikhoan_label.grid(row=1, column=0, padx=10, pady=5, sticky="we")
+    tk.Label(login_window, text="Mật khẩu:").pack(pady=5)
+    entry_password = tk.Entry(login_window, show="*")
+    entry_password.pack(pady=5)
 
-    taikhoan_entry = tk.Entry(login, font=("Times New Roman", 11))
-    taikhoan_entry.grid(row=1, column=1, padx=10, pady=5, sticky="we")
+    def login_action():
+        username = entry_username.get().strip()
+        password = entry_password.get().strip()
+        if not username or not password:
+            messagebox.showwarning("Lỗi", "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu")
+            return
 
-    
-    # Password
-    password_label = tk.Label(login, text="Password:", font=("Times New Roman", 11), anchor="w")
-    password_label.grid(row=2, column=0, padx=10, pady=5, sticky="we")
-
-    password_entry = tk.Entry(login, font=("Times New Roman", 11))
-    password_entry.grid(row=2, column=1, padx=10, pady=5, sticky="we")
-    
-    def HoTroDangNhap():
-        taikhoan = taikhoan_entry.get()
-        matkhau = password_entry.get()
-        user = user_manager.login(taikhoan, matkhau)
-        if user:
-            messagebox.showinfo("Succesfull!", "Đăng nhập thành công")
-            login.destroy()
-            Form_User.show_user_form(user)
+        user_manager = UserManage()
+        if user_manager.login(username, password):
+            messagebox.showinfo("Thành công", f"Đăng nhập thành công! Chào {username}")
+            login_window.destroy()
+            parent_window.destroy()
+            user = User(username, password)
+            on_success(user)
         else:
-            messagebox.showerror("Error!", "Đăng nhập thất bại!")
-            
-    # Button đăng nhập
-    dangnhap_button = tk.Button(login,
-                                text="Login",
-                                font=("Times New Roman", 11),
-                                command=HoTroDangNhap
-                                )
-    dangnhap_button.grid(row=3,column=1, padx=10, pady=10)
+            messagebox.showerror("Lỗi", "Tên đăng nhập hoặc mật khẩu không đúng")
 
-    # Link tới form đăng ký
-    tk.Label(login, text="Bạn chưa có tài khoản? Đăng ký tại đây!", font=("Times New Roman", 11,"bold")).grid(row=4,column=0, columnspan=2,padx=10, pady=10)
-    dangky_button = tk.Button(login, text="Register", font=("Times New Roman", 11), command=lambda:open_register(login))
-    dangky_button.grid(row=5,column=1, padx=10, pady=10)
+    def open_register():
+        from Form_Register import dangKy
+        dangKy(login_window, on_success)
 
-    
-    
-def open_register(current_form):
-    # Import cục bộ để tránh circular import
-    import Form_Register
-    Form_Register.dangKy(current_form)
+    tk.Button(login_window, text="Đăng nhập", command=login_action).pack(pady=10)
+    tk.Button(login_window, text="Đăng ký", command=open_register).pack(pady=5)
+    tk.Button(login_window, text="Hủy", command=login_window.destroy).pack()
