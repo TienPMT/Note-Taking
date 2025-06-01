@@ -26,9 +26,7 @@ def show_guest_form():
 
     # Nút Đăng nhập
     def on_login_success(user):
-        guest_window.destroy()
-        from Form_User import show_user_form
-        show_user_form(user)
+        
 
     login_button = tk.Button(button_frame, text="Đăng nhập", font=("Times New Roman", 16),
                              command=lambda: Form_Login.dangNhap(guest_window, on_login_success))

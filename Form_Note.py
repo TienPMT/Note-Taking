@@ -99,13 +99,16 @@ class Form_Note:
         search_note(self.user, self.window)
 
     def open_login_register(self):
+        from Form_Login import dangNhap
+        dangNhap(self.window, self.handle_login_success)
         self.window.withdraw()
-        def on_login_success(user):
-            self.window.destroy()  
-            Form_Note(user)   
+    
+    def handle_login_success(self, user):
+        if user.role == "admin":
+            from Form_Admin import Form_Admin
+            # Mở giao diện admin
+            Form_Admin(user)
+        else:
+            Form_Note(user)  
 
-        try:
-            from Form_Main import open_login
-            open_login(self.window, on_login_success)
-        except ImportError:
-           messagebox.showerror("Lỗi", "Không thể mở giao diện đăng nhập. Kiểm tra lại file Form_Main.py.")
+        
