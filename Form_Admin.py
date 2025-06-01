@@ -30,7 +30,12 @@ class Form_Admin:
                 self.username_var.set(username)
                 notes = self.users_data.get(username, {}).get('notes', [])
                 self.soluong_var.set(str(len(notes)))
-
+        
+        def dang_xuat():
+            self.user_manager.logout()
+            self.admin_window.destroy()
+            from Form_Main import show_main_form
+            show_main_form()
                 
         self.users_data = doc_du_lieu("Users_Data.json")
 
@@ -66,7 +71,7 @@ class Form_Admin:
         tk.Button(self.heading_frame,
                   text="Logout",
                   font=("Segoe UI", 11, "bold"),
-                  command=self.admin_window.destroy,
+                  command=lambda:dang_xuat(),
                   bg="#e53935",
                   fg="white",
                   relief=tk.FLAT,

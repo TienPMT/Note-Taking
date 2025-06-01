@@ -8,6 +8,7 @@ class UserManage:
     def __init__(self, filepath='Users_Data.json'):
         self.filepath = filepath
         self.users = self.load_users()
+        self.current_user = None
 
     def load_users(self):
         if not os.path.exists(self.filepath):
@@ -50,11 +51,12 @@ class UserManage:
             return False
         hashed_pw = self.hash_password(password)
         if self.users[username]['password'] == hashed_pw:
+            self.current_user = username
             return True
         return False
     
-    def logout(self, username, password):
-        
+    def logout(self):
+        self.current_user = None
 
     def get_user_data(self, username):
      

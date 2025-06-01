@@ -54,6 +54,8 @@ class Form_Note:
                   font=("Arial", 12), command=self.go_to_list).pack(pady=5)
         tk.Button(self.window, text="🔍 Tìm kiếm ghi chú", width=35, bg="#fd7e14", fg="white",
                   font=("Arial", 12), command=self.go_to_search).pack(pady=5)
+        tk.Button(self.window, text="Đăng xuất", width=25, bg="#FF0000", fg="white",
+                  font=("Arial", 12), command=self.logout).pack(pady=5)
 
         # Nếu là guest thì thêm nút đăng nhập / đăng ký
         if self.is_guest:
@@ -109,6 +111,12 @@ class Form_Note:
             # Mở giao diện admin
             Form_Admin(user)
         else:
-            Form_Note(user)  
+            Form_Note(user)
+    
+    def logout(self):
+        self.user_manager.logout()
+        self.window.destroy()
+        from Form_Main import show_main_form
+        show_main_form()
 
         
