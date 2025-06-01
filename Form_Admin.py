@@ -37,8 +37,8 @@ class Form_Admin:
         # //* Xây giao diện *\\
         self.admin_window = tk.Tk()
         self.admin_window.title("Admin")
-        self.admin_window.geometry("800x480")
-        self.admin_window.resizable(True, True)
+        self.admin_window.geometry("840x520")
+        self.admin_window.resizable(False, False)
         self.admin_window.configure(bg="#f0f4f8")
         
         self.style = ttk.Style(self.admin_window)
@@ -51,12 +51,29 @@ class Form_Admin:
         
         # ========================== Xây Heading ==========================
         self.heading_frame = tk.Frame(self.admin_window)
+        self.heading_frame.pack(padx=10, pady=10, fill="x")
+        
+        self.heading_frame.grid_columnconfigure(0, weight=1)
+        self.heading_frame.grid_columnconfigure(1, weight=0)
+        self.heading_frame.grid_columnconfigure(2, weight=1)
+        
         tk.Label(self.heading_frame,
                  text="Quản lý Note-Taking",
                  font=("Segoe UI", 21, "bold"),
                  foreground="#1976d2"
-                 ).pack(padx=10, pady=10)
-        self.heading_frame.pack(padx=10, pady=10, fill="x")
+                 ).grid(row=0, column=1, pady=10)
+        
+        tk.Button(self.heading_frame,
+                  text="Logout",
+                  font=("Segoe UI", 11, "bold"),
+                  command=self.admin_window.destroy,
+                  bg="#e53935",
+                  fg="white",
+                  relief=tk.FLAT,
+                  borderwidth=0,
+                  padx=12,
+                  pady=4
+                  ).grid(row=0, column=2, padx=10, pady=10)
         
         # ========================== Xây Body ==========================
         self.body_frame = tk.Frame(self.admin_window)
@@ -68,8 +85,9 @@ class Form_Admin:
         self.tree = ttk.Treeview(self.ds_user_frame, columns=("username"), show="headings")
         self.tree.heading("username", text="Danh sách User")
         self.tree.pack()
-        for username in self.users_data:
-            self.tree.insert("", "end", values=(username,))
+        for username, info in self.users_data.items():
+            if info.get("role", "user") == "user":
+                self.tree.insert("", "end", values=(username,))
         self.tree.bind("<<TreeviewSelect>>", chon_dong)
 
         # ============ Xây dụng thống kê =============

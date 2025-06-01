@@ -52,6 +52,9 @@ class UserManage:
         if self.users[username]['password'] == hashed_pw:
             return True
         return False
+    
+    def logout(self, username, password):
+        
 
     def get_user_data(self, username):
      
