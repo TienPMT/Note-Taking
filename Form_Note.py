@@ -106,11 +106,11 @@ class Form_Note:
         self.window.withdraw()
     
     def handle_login_success(self, user):
-        if user.role == "admin":
-            from Form_Admin import Form_Admin
-            # Mở giao diện admin
-            Form_Admin(user)
+        if user.role == 'admin':
+            from Form_Admin import show_admin_form
+            show_admin_form(user)
         else:
+            from Form_Note import Form_Note
             Form_Note(user)
     
     def logout(self):

@@ -26,7 +26,13 @@ def show_guest_form():
 
     # Nút Đăng nhập
     def on_login_success(user):
-        
+        guest_window.destroy()
+        if user.role == 'admin':
+            from Form_Admin import show_admin_form
+            show_admin_form(user)
+        else:
+            from Form_Note import Form_Note
+            Form_Note(user)
 
     login_button = tk.Button(button_frame, text="Đăng nhập", font=("Times New Roman", 16),
                              command=lambda: Form_Login.dangNhap(guest_window, on_login_success))

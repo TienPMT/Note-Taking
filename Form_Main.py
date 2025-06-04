@@ -85,8 +85,12 @@ def open_login(main_window, on_success):
             # Lấy thông tin user từ database
             user_data = manager.users.get(username)
             role = user_data.get('role', 'user')
-            # Tạo đối tượng User với role tương ứng
-            user = User(username, password, role)
+            # Tạo đối tượng đúng class theo role
+            if role == 'admin':
+                from Class_Admin import Admin
+                user = Admin(username, password)
+            else:
+                user = User(username, password, role)
             login_window.destroy()
             main_window.destroy()
             on_success(user)
@@ -111,8 +115,8 @@ def show_main_form():
 
     def on_login_success(user):
         if user.role == 'admin':
-            from Form_Admin import Form_Admin
-            Form_Admin(user)
+            from Form_Admin import show_admin_form
+            show_admin_form(user)
         else:
             from Form_Note import Form_Note
             Form_Note(user)

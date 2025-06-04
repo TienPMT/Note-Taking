@@ -32,8 +32,12 @@ def dangNhap(parent_window, on_success):
             # Lấy thông tin user từ database
             user_data = user_manager.users.get(username)
             role = user_data.get('role', 'user')
-            # Tạo đối tượng User với role tương ứng
-            user = User(username, password, role)
+            # Tạo đối tượng đúng class theo role
+            if role == 'admin':
+                from Class_Admin import Admin
+                user = Admin(username, password)
+            else:
+                user = User(username, password, role)
             
             # Thông báo tùy theo role
             if user.role == 'admin':
