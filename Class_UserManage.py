@@ -67,8 +67,16 @@ class UserManage:
         return None
     
     def update_user_notes(self, username, notes):
-        if not self.find_user(username):
-            return False
-        self.users[username]['notes'] = notes
+        # Chuyển object Note thành dict nếu có
+        notes_to_save = []
+        for note in notes:
+            if hasattr(note, '__dict__'):
+                notes_to_save.append(note.__dict__)
+            elif isinstance(note, dict):
+                notes_to_save.append(note)
+            else:
+                # Không xác định được kiểu, bỏ qua hoặc raise error
+                continue
+        self.users[username]['notes'] = notes_to_save
         self.save_users()
         return True

@@ -6,26 +6,76 @@ from Form_EditNote import show_edit_note_form
 
 class Form_SearchNote:
     def __init__(self, user, parent_window=None):
+        # ==== Màu sắc chủ đạo ====
+        BG = "#e3f2fd"
+        HEADER = "#1976d2"
+        BTN_SEARCH = "#1976d2"
+        BTN_ACTION = "#43a047"
+        BTN_BACK = "#e53935"
+        TEXT_COLOR = "white"
+
         self.user = user
         self.parent_window = parent_window
         self.window = tk.Toplevel()
         self.window.title(f"Tìm kiếm ghi chú của {user.username}")
-        self.window.geometry("450x400")
-
+        self.window.geometry("500x500")
+        self.window.configure(bg=BG)
         self.window.protocol("WM_DELETE_WINDOW", self.on_close)
 
-        tk.Label(self.window, text="Nhập từ khóa tìm kiếm:", font=("Arial", 12)).pack(pady=5)
-        self.entry_search = tk.Entry(self.window, width=40)
-        self.entry_search.pack(pady=5)
+        # ==== Tiêu đề ====
+        label_title = tk.Label(
+            self.window,
+            text=f"🔎 Tìm kiếm ghi chú của {user.username}",
+            font=("Segoe UI", 15, "bold"),
+            fg=HEADER,
+            bg=BG,
+            pady=10
+        )
+        label_title.pack()
 
-        tk.Button(self.window, text="Tìm kiếm", command=self.search).pack(pady=5)
+        # ==== Nhập từ khóa ====
+        search_frame = tk.Frame(self.window, bg=BG)
+        search_frame.pack(pady=8)
 
-        self.listbox = tk.Listbox(self.window, width=60, height=15)
-        self.listbox.pack(pady=10)
+        tk.Label(search_frame, text="Nhập từ khóa tìm kiếm:", font=("Segoe UI", 11), bg=BG).grid(row=0, column=0, sticky="w", pady=2)
+        self.entry_search = tk.Entry(search_frame, width=32, font=("Segoe UI", 11))
+        self.entry_search.grid(row=1, column=0, sticky="w", padx=2, pady=3)
 
-        tk.Button(self.window, text="Xem / Chỉnh sửa", command=self.edit_note).pack(pady=5)
+        # ==== Nút tìm kiếm ====
+        btn_search = tk.Button(
+            search_frame, text="Tìm kiếm", width=10, font=("Segoe UI", 10, "bold"),
+            bg=BTN_SEARCH, fg=TEXT_COLOR, relief=tk.FLAT, cursor="hand2",
+            command=self.search
+        )
+        btn_search.grid(row=1, column=1, padx=(12,0), pady=3)
 
+        # ==== Kết quả ====
+        list_frame = tk.Frame(self.window, bg=BG)
+        list_frame.pack(pady=10)
+        self.listbox = tk.Listbox(list_frame, width=62, height=15, font=("Segoe UI", 10))
+        self.listbox.pack()
+
+        # ==== Footer button ====
+        self.button_footer = tk.Frame(self.window, bg=BG)
+        self.button_footer.pack(pady=12)
+        btn_edit = tk.Button(
+            self.button_footer, text="✏ Xem / Chỉnh sửa", width=17, font=("Segoe UI", 10, "bold"),
+            bg=BTN_ACTION, fg=TEXT_COLOR, relief=tk.FLAT, cursor="hand2",
+            command=self.edit_note
+        )
+        btn_edit.grid(row=0, column=0, padx=8, pady=5)
+
+        btn_back = tk.Button(
+            self.button_footer, text="⏪ Quay lại", width=10, font=("Segoe UI", 10, "bold"),
+            bg=BTN_BACK, fg=TEXT_COLOR, relief=tk.FLAT, cursor="hand2",
+            command=self.on_close
+        )
+        btn_back.grid(row=0, column=1, padx=8, pady=5)
+
+        # ==== Biến lưu kết quả ====
         self.search_results = []
+        
+
 
     def search(self):
         keyword = self.entry_search.get().strip().lower()

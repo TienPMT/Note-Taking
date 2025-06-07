@@ -5,24 +5,80 @@ from tkinter import messagebox
 
 class Form_EditNote:
     def __init__(self, user, note, on_update=None):
+        # ==== Color palette ====
+        BG = "#e3f2fd"
+        HEADER = "#1976d2"
+        BTN_SAVE = "#43a047"
+        BTN_SAVE_TEXT = "white"
+        BTN_CANCEL = "#e53935"
+        BTN_CANCEL_TEXT = "white"
+        ENTRY_BG = "#ffffff"
+
         self.user = user
         self.note = note
         self.on_update = on_update
+
         self.window = tk.Toplevel()
         self.window.title("Chỉnh sửa ghi chú")
-        self.window.geometry("400x400")
+        self.window.geometry("420x430")
+        self.window.configure(bg=BG)
 
-        tk.Label(self.window, text="Tiêu đề:").pack(pady=5)
-        self.entry_title = tk.Entry(self.window, width=40)
-        self.entry_title.pack(pady=5)
+        # ==== Header ====
+        tk.Label(
+            self.window, text="📝 Chỉnh sửa ghi chú",
+            font=("Segoe UI", 15, "bold"),
+            fg=HEADER, bg=BG, pady=14
+        ).pack()
+
+        # ==== Tiêu đề ====
+        frame_title = tk.Frame(self.window, bg=BG)
+        frame_title.pack(pady=(10, 0))
+        tk.Label(
+            frame_title, text="Tiêu đề:",
+            font=("Segoe UI", 11, "bold"),
+            bg=BG
+        ).pack(anchor="w", padx=5)
+        self.entry_title = tk.Entry(
+            frame_title, width=38, font=("Segoe UI", 11),
+            bg=ENTRY_BG, relief=tk.FLAT
+        )
+        self.entry_title.pack(padx=5, pady=(2, 8))
         self.entry_title.insert(0, self.note.title)
 
-        tk.Label(self.window, text="Nội dung:").pack(pady=5)
-        self.text_content = tk.Text(self.window, height=10, width=40)
-        self.text_content.pack(pady=5)
+        # ==== Nội dung ====
+        frame_content = tk.Frame(self.window, bg=BG)
+        frame_content.pack(pady=(0, 0))
+        tk.Label(
+            frame_content, text="Nội dung:",
+            font=("Segoe UI", 11, "bold"),
+            bg=BG
+        ).pack(anchor="w", padx=5)
+        self.text_content = tk.Text(
+            frame_content, height=10, width=38,
+            font=("Segoe UI", 11), bg=ENTRY_BG, relief=tk.FLAT
+        )
+        self.text_content.pack(padx=5, pady=(2, 8))
         self.text_content.insert("1.0", self.note.content)
 
-        tk.Button(self.window, text="Lưu thay đổi", command=self.save_changes).pack(pady=10)
+        # ==== Button frame ====
+        btn_frame = tk.Frame(self.window, bg=BG)
+        btn_frame.pack(pady=15)
+
+        btn_save = tk.Button(
+            btn_frame, text="💾 Lưu thay đổi", width=16,
+            font=("Segoe UI", 10, "bold"),
+            bg=BTN_SAVE, fg=BTN_SAVE_TEXT, relief=tk.FLAT, cursor="hand2",
+            command=self.save_changes
+        )
+        btn_save.grid(row=0, column=0, padx=8, ipadx=2)
+
+        btn_cancel = tk.Button(
+            btn_frame, text="Hủy", width=8,
+            font=("Segoe UI", 10, "bold"),
+            bg=BTN_CANCEL, fg=BTN_CANCEL_TEXT, relief=tk.FLAT, cursor="hand2",
+            command=self.window.destroy
+        )
+        btn_cancel.grid(row=0, column=1, padx=8, ipadx=2)
 
 
     def save_changes(self):

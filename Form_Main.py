@@ -1,131 +1,90 @@
-# -*- coding: utf-8 -*-
-
 import tkinter as tk
-from tkinter import messagebox
 from Class_Guest import Guest
-from Class_UserManage import UserManage
-from Class_User import User
 from Form_Note import Form_Note
+from Form_Login import Form_Login
 
-def start_as_guest(current_window):
-    guest = Guest()
-    current_window.destroy()
-    Form_Note(guest)
+class Form_Main:
+    def __init__(self):
+        # ==== Color Palette ====
+        BG_COLOR = "#e3f2fd"          # Light blue
+        HEADER_COLOR = "#1976d2"      # Blue
+        BTN_LOGIN = "#1976d2"         # Main blue button
+        BTN_LOGIN_HOVER = "#115293"
+        BTN_GUEST = "#43a047"         # Green
+        BTN_GUEST_HOVER = "#388e3c"
+        BTN_EXIT = "#e53935"          # Red
+        BTN_EXIT_HOVER = "#b71c1c"
+        TEXT_COLOR = "white"
 
-def open_register(parent_window, on_success):
-    register_window = tk.Toplevel(parent_window)
-    register_window.title("Đăng ký")
-    register_window.geometry("300x300")
-    register_window.resizable(False, False)
+        # ==== Init Window ====
+        self.root = tk.Tk()
+        self.root.title("📝 Ghi chú App")
+        self.root.geometry("400x340")
+        self.root.resizable(False, False)
+        self.root.configure(bg=BG_COLOR)
 
-    tk.Label(register_window, text="Tên đăng nhập").pack(pady=5)
-    entry_username = tk.Entry(register_window)
-    entry_username.pack(pady=5)
+        # ==== Header ====
+        header = tk.Label(
+            self.root,
+            text="📝 Chào mừng đến với Note App",
+            font=("Segoe UI", 16, "bold"),
+            fg=HEADER_COLOR,
+            bg=BG_COLOR,
+            pady=18
+        )
+        header.pack()
 
-    tk.Label(register_window, text="Mật khẩu").pack(pady=5)
-    entry_password = tk.Entry(register_window, show="*")
-    entry_password.pack(pady=5)
+        # ==== Button Style Helper ====
+        def style_button(btn, color, hover_color):
+            btn.configure(bg=color, fg=TEXT_COLOR, activebackground=hover_color, activeforeground=TEXT_COLOR, relief=tk.FLAT, font=("Segoe UI", 11, "bold"), cursor="hand2")
+            btn.bind("<Enter>", lambda e: btn.config(bg=hover_color))
+            btn.bind("<Leave>", lambda e: btn.config(bg=color))
 
-    tk.Label(register_window, text="Xác nhận mật khẩu").pack(pady=5)
-    entry_confirm_password = tk.Entry(register_window, show="*")
-    entry_confirm_password.pack(pady=5)
+        # ==== Login/Register Button ====
+        btn_login = tk.Button(
+            self.root,
+            text="🔑 Đăng nhập / Đăng ký",
+            width=25,
+            command=self.open_login
+        )
+        btn_login.pack(pady=15, ipady=5)
+        style_button(btn_login, BTN_LOGIN, BTN_LOGIN_HOVER)
 
-    def register_action():
-        username = entry_username.get().strip()
-        password = entry_password.get().strip()
-        confirm = entry_confirm_password.get().strip()
+        # ==== Guest Button ====
+        btn_guest = tk.Button(
+            self.root,
+            text="🎮 Dùng thử với Guest",
+            width=25,
+            command=self.start_as_guest
+        )
+        btn_guest.pack(pady=5, ipady=5)
+        style_button(btn_guest, BTN_GUEST, BTN_GUEST_HOVER)
 
-        if not username or not password or not confirm:
-            messagebox.showwarning("Lỗi", "Vui lòng nhập đầy đủ thông tin.")
-            return
-        if password != confirm:
-            messagebox.showwarning("Lỗi", "Mật khẩu xác nhận không khớp.")
-            return
+        # ==== Exit Button ====
+        btn_exit = tk.Button(
+            self.root,
+            text="⏹️ Thoát",
+            width=13,
+            command=self.root.destroy
+        )
+        btn_exit.pack(pady=20, ipady=3)
+        style_button(btn_exit, BTN_EXIT, BTN_EXIT_HOVER)
 
-        manager = UserManage()
-        if manager.find_user(username):
-            messagebox.showwarning("Lỗi", "Tên đăng nhập đã tồn tại.")
-            return
-        if manager.add_user(username, password):
-            messagebox.showinfo("Thành công", "Đăng ký thành công!")
-            register_window.destroy()
-            parent_window.destroy()
-            user = User(username, password)
-            on_success(user)
-        else:
-            messagebox.showerror("Lỗi", "Đăng ký thất bại.")
+        self.root.mainloop()
 
-    tk.Button(register_window, text="Đăng ký", bg="lightblue", command=register_action).pack(pady=10)
-    tk.Button(register_window, text="Hủy", command=register_window.destroy).pack()
-
-def open_login(main_window, on_success):
-    main_window.withdraw()
-
-    login_window = tk.Toplevel(main_window)
-    login_window.title("Đăng nhập")
-    login_window.geometry("300x200")
-    login_window.resizable(False, False)
-
-    tk.Label(login_window, text="Tên đăng nhập").pack(pady=5)
-    entry_user = tk.Entry(login_window)
-    entry_user.pack(pady=5)
-
-    tk.Label(login_window, text="Mật khẩu").pack(pady=5)
-    entry_pass = tk.Entry(login_window, show="*")
-    entry_pass.pack(pady=5)
-
-    def try_login():
-        username = entry_user.get().strip()
-        password = entry_pass.get().strip()
-        if not username or not password:
-            messagebox.showwarning("Lỗi", "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.")
-            return
-        manager = UserManage()
-        if manager.login(username, password):
-            # Lấy thông tin user từ database
-            user_data = manager.users.get(username)
-            role = user_data.get('role', 'user')
-            # Tạo đối tượng đúng class theo role
-            if role == 'admin':
-                from Class_Admin import Admin
-                user = Admin(username, password)
-            else:
-                user = User(username, password, role)
-            login_window.destroy()
-            main_window.destroy()
-            on_success(user)
-        else:
-            messagebox.showerror("Thất bại", "Sai tên đăng nhập hoặc mật khẩu.")
-
-    tk.Button(login_window, text="Đăng nhập", command=try_login).pack(pady=10)
-    tk.Button(login_window, text="Đăng ký", command=lambda: open_register(login_window, on_success)).pack(pady=5)
-
-    def on_close():
-        login_window.destroy()
-        main_window.deiconify()
-    login_window.protocol("WM_DELETE_WINDOW", on_close)
-
-def show_main_form():
-    root = tk.Tk()
-    root.title("Ghi chú App")
-    root.geometry("360x300")
-    root.resizable(False, False)
-
-    tk.Label(root, text="Chào mừng đến với Note App", font=("Arial", 16, "bold")).pack(pady=20)
-
-    def on_login_success(user):
+    def start_as_guest(self):
+        guest = Guest()
+        self.root.destroy()
+        Form_Note(guest)
+        
+    def open_login(self):
+        self.login_form = Form_Login(self.root, self.on_login_success)
+    
+    def on_login_success(self, user):
+        self.root.destroy()
         if user.role == 'admin':
             from Form_Admin import show_admin_form
             show_admin_form(user)
         else:
             from Form_Note import Form_Note
             Form_Note(user)
-
-    tk.Button(root, text="Đăng nhập / Đăng ký", width=25, command=lambda: open_login(root, on_login_success)).pack(pady=10)
-    tk.Button(root, text="Dùng thử với Guest", width=25, command=lambda: start_as_guest(root)).pack(pady=10)
-    tk.Button(root, text="Thoát", width=15, command=root.destroy).pack(pady=10)
-
-    root.mainloop()
-
-if __name__ == "__main__":
-    show_main_form()
