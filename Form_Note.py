@@ -162,8 +162,8 @@ class Form_Note:
     
     def handle_login_success(self, user):
         if user.role == 'admin':
-            from Form_Admin import show_admin_form
-            show_admin_form(user)
+            from Form_Admin import Form_Admin
+            Form_Admin(user)
         else:
             from Form_Note import Form_Note
             Form_Note(user)

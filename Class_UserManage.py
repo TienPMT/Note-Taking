@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
-
 import json
 import os
-import hashlib
 
 class UserManage:
     def __init__(self, filepath='Users_Data.json'):
@@ -27,19 +24,14 @@ class UserManage:
         except Exception as e:
                 print(f"Lỗi khi lưu file {self.filepath}: {e}")
 
-
-    def hash_password(self, password):
-        return hashlib.sha256(password.encode('utf-8')).hexdigest()
-
     def find_user(self, username):
         return username in self.users
 
     def add_user(self, username, password):
         if self.find_user(username):
             return False
-        hashed_pw = self.hash_password(password)
         self.users[username] = {
-            'password': hashed_pw,
+            'password': password,
             'notes': [],
             'role': "user"
         }
@@ -49,8 +41,7 @@ class UserManage:
     def login(self, username, password):
         if not self.find_user(username):
             return False
-        hashed_pw = self.hash_password(password)
-        if self.users[username]['password'] == hashed_pw:
+        if self.users[username]['password'] == password:
             self.current_user = username
             return True
         return False
@@ -59,7 +50,6 @@ class UserManage:
         self.current_user = None
 
     def get_user_data(self, username):
-     
         if self.find_user(username):
             data = self.users[username].copy()
             data.pop('password', None)

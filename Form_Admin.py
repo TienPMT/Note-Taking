@@ -4,156 +4,310 @@ from datetime import datetime
 from Class_UserManage import UserManage
 from Class_Admin import Admin
 
-def show_admin_form(admin_user):
-    def chon_dong(event):
-        chon = tree.selection()
+class Form_Admin:
+    def __init__(self, admin_user):
+        self.admin_user = admin_user
+        self.admin = Admin(admin_user.username, admin_user.password)
+        self.user_manager = UserManage()
+        self.users_data = self.user_manager.load_users()
+
+        self.window = tk.Tk()
+        self.window.title("Quản lý Note-Taking")
+        self.window.geometry("900x550")
+        self.window.resizable(False, False)
+        self.window.configure(bg="#e3e8f0")
+
+        style = ttk.Style(self.window)
+        style.theme_use("clam")
+        # Treeview user (list)
+        style.configure("Treeview",
+                        font=("Segoe UI", 12),
+                        rowheight=30,
+                        borderwidth=1,
+                        relief="flat",
+                        background="#f8fafc",
+                        fieldbackground="#f8fafc",
+                        foreground="#222b45")
+        style.configure("Treeview.Heading",
+                        font=("Segoe UI", 13, "bold"),
+                        background="#2563eb",
+                        foreground="#fff")
+        # Hiệu ứng khi chọn
+        style.map("Treeview",
+                  background=[('selected', '#2563eb')],
+                  foreground=[('selected', '#fff')])
+
+        # Nút
+        style.configure("TButton",
+                        font=("Segoe UI", 11, "bold"),
+                        padding=6,
+                        background="#2563eb",
+                        foreground="#fff",
+                        borderwidth=0)
+        style.map("TButton",
+                  background=[('active', '#1e40af'), ('!active', '#2563eb')])
+
+        # Label
+        style.configure("TLabel",
+                        font=("Segoe UI", 12),
+                        background="#e3e8f0")
+
+        # ========================== HEADING ==========================
+        heading_frame = tk.Frame(self.window, bg="#e3e8f0")
+        heading_frame.pack(padx=10, pady=10, fill="x")
+        heading_frame.grid_columnconfigure(0, weight=1)
+        heading_frame.grid_columnconfigure(1, weight=0)
+        heading_frame.grid_columnconfigure(2, weight=1)
+
+        tk.Label(heading_frame,
+                 text="Quản lý Note-Taking",
+                 font=("Segoe UI", 22, "bold"),
+                 bg="#e3e8f0",
+                 fg="#2563eb"
+                 ).grid(row=0, column=1, pady=10)
+
+        tk.Button(heading_frame,
+                  text="Đăng xuất",
+                  font=("Segoe UI", 11, "bold"),
+                  command=lambda: self.admin.dang_xuat(self.user_manager, self.window),
+                  bg="#e11d48",
+                  fg="white",
+                  relief=tk.FLAT,
+                  borderwidth=0,
+                  padx=16,
+                  pady=6,
+                  activebackground="#be123c"
+                  ).grid(row=0, column=2, padx=10, pady=10)
+
+        # ========================== BODY ==========================
+        body_frame = tk.Frame(self.window, bg="#e3e8f0")
+        body_frame.pack(padx=10, pady=0, fill="both", expand=True)
+
+        # ======== TREEVIEW USERS LIST ========
+        ds_user_frame = tk.Frame(body_frame, bg="#e3e8f0", highlightbackground="#2563eb", highlightthickness=1)
+        ds_user_frame.grid(row=0, column=0, padx=(0, 20), pady=10, sticky="ns")
+        tk.Label(ds_user_frame, text="Danh sách User", font=("Segoe UI", 14, "bold"), bg="#e3e8f0", fg="#2563eb").pack(pady=(0, 5))
+        self.tree = ttk.Treeview(ds_user_frame, columns=("username"), show="headings", selectmode="browse", height=10)
+        self.tree.heading("username", text="Username")
+        self.tree.column("username", width=200, anchor="center")
+        self.tree.pack(fill="y", expand=True)
+        for username, info in self.users_data.items():
+            if info.get("role", "user") == "user":
+                self.tree.insert("", "end", values=(username,))
+        self.tree.bind("<<TreeviewSelect>>", self.chon_dong)
+
+        # ============ Thống kê ============
+        thongke_frame = tk.Frame(body_frame, bg="#e3e8f0")
+        thongke_frame.grid(row=0, column=1, padx=10, sticky="nsew")
+        tk.Label(thongke_frame,
+                 text="Thống kê",
+                 font=("Segoe UI", 15, "bold"),
+                 fg="#2563eb",
+                 bg="#e3e8f0"
+                 ).grid(row=0, column=0, columnspan=2, padx=10, sticky="w")
+        tk.Label(thongke_frame,
+                 text="Username:",
+                 font=("Segoe UI", 13),
+                 bg="#e3e8f0"
+                 ).grid(row=1, column=0, padx=10, sticky="w")
+        self.username_var = tk.StringVar()
+        ttk.Entry(thongke_frame,
+                textvariable=self.username_var,
+                font=("Segoe UI", 13),
+                state="readonly",
+                width=18
+                ).grid(row=1, column=1, padx=10, sticky="w", columnspan=2)
+        tk.Label(thongke_frame,
+                 text="Số lượng Note:",
+                 font=("Segoe UI", 13),
+                 bg="#e3e8f0"
+                 ).grid(row=2, column=0, padx=10, sticky="w")
+        self.soluong_var = tk.StringVar()
+        ttk.Entry(thongke_frame,
+                textvariable=self.soluong_var,
+                font=("Segoe UI", 13),
+                state="readonly",
+                width=18
+                ).grid(row=2, column=1, padx=10, sticky="w", columnspan=2)
+        tk.Label(thongke_frame,
+                 text="Lịch sử tạo note",
+                 font=("Segoe UI", 13),
+                 bg="#e3e8f0"
+                 ).grid(row=3, column=0, padx=10, sticky="w")
+
+        notes_frame = tk.Frame(thongke_frame, bg="#dbeafe", highlightbackground="#2563eb", highlightthickness=1)
+        notes_frame.grid(row=4, rowspan=2, column=0, columnspan=2, padx=10, pady=10)
+        self.notes_tree = ttk.Treeview(
+            notes_frame,
+            columns=("title", "created_at", "updated_at"),
+            show="headings",
+            height=6
+        )
+        self.notes_tree.heading("title", text="Tiêu đề")
+        self.notes_tree.heading("created_at", text="Ngày tạo")
+        self.notes_tree.heading("updated_at", text="Ngày sửa")
+        self.notes_tree.column("title", width=220)
+        self.notes_tree.column("created_at", width=120)
+        self.notes_tree.column("updated_at", width=120)
+        self.notes_tree.pack(expand=True, fill="both")
+
+        # ========================== LIST BUTTON ==========================
+        button_frame = tk.Frame(body_frame, bg="#e3e8f0")
+        button_frame.grid(row=1, column=1, padx=10, pady=20, sticky="ew")
+        ttk.Button(button_frame, text="Xoá User", width=14, command=self.xoa_user).grid(row=0, column=0, padx=12)
+        ttk.Button(button_frame, text="Đổi mật khẩu", width=14, command=self.doi_password).grid(row=0, column=1, padx=12)
+        ttk.Button(button_frame, text="Cấp quyền", width=14, command=self.cap_quyen).grid(row=0, column=2, padx=12)
+
+        self.window.mainloop()
+
+
+    def chon_dong(self, event):
+        chon = self.tree.selection()
         if chon:
-            username = tree.item(chon[0])['values'][0]
-            username_var.set(username)
-            notes = users_data.get(username, {}).get('notes', [])
-            soluong_var.set(str(len(notes)))
+            username = self.tree.item(chon[0])['values'][0] # lấy Username
+            self.username_var.set(username)
+            notes = self.users_data.get(username, {}).get('notes', [])
+            self.soluong_var.set(str(len(notes)))
             
             # Xóa bảng note cũ
-            for i in notes_tree.get_children():
-                notes_tree.delete(i)
+            for i in self.notes_tree.get_children():
+                self.notes_tree.delete(i)
             # Thêm note mới
             for note in notes:
                 title = note.get('title', '')
                 created_goc = note.get('created', note.get('created_at', ''))
                 updated_goc = note.get('updated', note.get('updated_at', ''))
-                created = date(created_goc)
-                updated = date(updated_goc)
-                notes_tree.insert("", tk.END, values=(title, created, updated))
-                
-    def cap_nhat_du_lieu():
-        for i in tree.get_children():
-            tree.delete(i)
-        for username in users_data:
-            tree.insert("", tk.END, values=(username,))  
-        
-    def date(dt_str):
+                created = self.date(created_goc)
+                updated = self.date(updated_goc)
+                self.notes_tree.insert("", tk.END, values=(title, created, updated))
+    
+    def cap_nhat_tree_users(self):
+        # Reload dữ liệu mới nhất
+        self.users_data = self.user_manager.load_users()
+        # Xóa tree cũ
+        for i in self.tree.get_children():
+            self.tree.delete(i)
+        # Thêm lại các user mới
+        for username, info in self.users_data.items():
+            if info.get("role", "user") == "user":
+                self.tree.insert("", "end", values=(username,))
+            
+    def date(self, dt_str):
         try:
-            # Nếu chuỗi đúng định dạng ISO, cắt lấy ngày
             return datetime.fromisoformat(dt_str).strftime('%Y-%m-%d')
         except Exception:
-            # Nếu lỗi (ví dụ chuỗi trống hoặc không hợp lệ), lấy 10 ký tự đầu
             return dt_str[:10] if dt_str else ''
+    
+    def xoa_user(self):
+        chon = self.tree.selection()
+        if not chon:
+            messagebox.showwarning("Thông báo", "Hãy chọn user cần xoá!")
+            return
+        username = self.tree.item(chon[0])['values'][0] # lấy Username
         
-    admin = Admin(admin_user.username, admin_user.password)
-    user_manager = UserManage()
-    users_data = user_manager.load_users()
+        if not messagebox.askyesno("Xác nhận", f"Bạn chắc chắn muốn xoá user '{username}'?"):
+            return
+        if self.admin.delete_user(username):
+            messagebox.showinfo("Thành công", f"Đã xoá user '{username}'")
+            self.cap_nhat_tree_users()
+            # Xoá thông tin thống kê bên phải nếu user vừa bị xoá đang được xem
+            self.username_var.set("")
+            self.soluong_var.set("")
+            for i in self.notes_tree.get_children():
+                self.notes_tree.delete(i)
+        else:
+            messagebox.showwarning("Lỗi", f"Không thể xoá user '{username}'")
+    
+    def doi_password(self):
+        chon = self.tree.selection()
+        if not chon:
+            messagebox.showwarning("Thông báo", "Hãy chọn User cần đổi mật khẩu", parent=self.window)
+            return
+        username = self.tree.item(chon[0])['values'][0]
+        users_data = self.user_manager.load_users()
+        user_password = users_data[username]['password']
+    
+        # ======= Giao diện hiện đại với ttk =======
+        change_password_window = tk.Toplevel(self.window)
+        change_password_window.geometry("370x320")
+        change_password_window.title("Đổi mật khẩu User")
+        change_password_window.resizable(False, False)
+        change_password_window.configure(bg="#f1f5f9")
+        change_password_window.grab_set()
+    
+        # Tiêu đề & icon
+        tk.Label(change_password_window, text="🔒", font=("Segoe UI Emoji", 28), bg="#f1f5f9").pack(pady=(18,0))
+        tk.Label(change_password_window, text="Đổi mật khẩu User", font=("Segoe UI", 16, "bold"), fg="#2563eb", bg="#f1f5f9").pack(pady=(4,14))
+    
+        frm = tk.Frame(change_password_window, bg="#f1f5f9")
+        frm.pack(expand=True, fill="both", padx=30, pady=6)
+    
+        # Trường nhập
+        tk.Label(frm, text="Mật khẩu cũ:", bg="#f1f5f9", anchor="w", font=("Segoe UI", 12)).grid(row=0, column=0, sticky="w", pady=5)
+        old_password_entry = ttk.Entry(frm, show="*")
+        old_password_entry.grid(row=0, column=1, pady=5, padx=10)
+    
+        tk.Label(frm, text="Mật khẩu mới:", bg="#f1f5f9", anchor="w", font=("Segoe UI", 12)).grid(row=1, column=0, sticky="w", pady=5)
+        new_password_entry = ttk.Entry(frm, show="*")
+        new_password_entry.grid(row=1, column=1, pady=5, padx=10)
+    
+        tk.Label(frm, text="Xác nhận mật khẩu:", bg="#f1f5f9", anchor="w", font=("Segoe UI", 12)).grid(row=2, column=0, sticky="w", pady=5)
+        new_password_confirm_entry = ttk.Entry(frm, show="*")
+        new_password_confirm_entry.grid(row=2, column=1, pady=5, padx=10)
+    
+        def xac_nhan():
+            old_password = old_password_entry.get().strip()
+            new_password = new_password_entry.get().strip()
+            new_password_confirm = new_password_confirm_entry.get().strip()
+    
+            if not old_password:
+                messagebox.showerror("Lỗi", "Mật khẩu cũ không được để trống!", parent=change_password_window)
+                return
+            if not new_password:
+                messagebox.showerror("Lỗi", "Mật khẩu mới không được để trống!", parent=change_password_window)
+                return
+            if old_password != user_password:
+                messagebox.showerror("Lỗi", "Mật khẩu cũ không đúng!", parent=change_password_window)
+                return
+            if old_password == new_password:
+                messagebox.showerror("Lỗi", "Mật khẩu mới không được trùng với mật khẩu cũ!", parent=change_password_window)
+                return
+            if new_password != new_password_confirm:
+                messagebox.showerror("Lỗi", "Mật khẩu xác nhận không khớp!", parent=change_password_window)
+                return
+    
+            if self.admin.change_password(username, new_password):
+                messagebox.showinfo("Thành công!", f"Đổi mật khẩu user '{username}' thành công!", parent=change_password_window)
+                change_password_window.destroy()
+            else:
+                messagebox.showerror("Lỗi!", f"Đổi mật khẩu user '{username}' không thành công!", parent=change_password_window)
+    
+        # Nút xác nhận
+        style = ttk.Style()
+        style.configure("Accent.TButton", font=("Segoe UI", 12, "bold"), background="#2563eb", foreground="white", padding=6)
+        style.map("Accent.TButton",
+                  background=[('active', '#1e40af'), ('!active', '#2563eb')],
+                  foreground=[('pressed', '#fff'), ('active', '#fff')])
+        ttk.Button(
+            change_password_window,
+            text="Xác nhận",
+            style="Accent.TButton",
+            command=xac_nhan
+        ).pack(pady=16)
+        
+    def cap_quyen(self):
+        chon = self.tree.selection()
+        if not chon:
+            messagebox.showwarning("Thông báo", "Hãy chọn User cần cấp quyền")
+            return
+        
+        username = self.tree.item(chon[0])['values'][0]        
 
-    # //* Xây giao diện *\\
-    admin_window = tk.Tk()
-    admin_window.title("Admin")
-    admin_window.geometry("840x520")
-    admin_window.resizable(True, True)
-    admin_window.configure(bg="#f0f4f8")
-    
-    style = ttk.Style(admin_window)
-    style.theme_use("clam")
-    style.configure("Treeview", font=("Segoe UI", 12), rowheight=28)
-    style.configure("Treeview.Heading", font=("Segoe UI", 13, "bold"))
-    style.configure("TFrame", background="#f0f4f8")
-    style.configure("TLabel", background="#f0f4f8", font=("Segoe UI", 12))
-    style.configure("TButton", font=("Segoe UI", 11, "bold"))
-    
-    # ========================== Xây Heading ==========================
-    heading_frame = tk.Frame(admin_window)
-    heading_frame.pack(padx=10, pady=10, fill="x")
-    
-    heading_frame.grid_columnconfigure(0, weight=1)
-    heading_frame.grid_columnconfigure(1, weight=0)
-    heading_frame.grid_columnconfigure(2, weight=1)
-    
-    tk.Label(heading_frame,
-             text="Quản lý Note-Taking",
-             font=("Segoe UI", 21, "bold"),
-             foreground="#1976d2"
-             ).grid(row=0, column=1, pady=10)
-    
-    tk.Button(heading_frame,
-              text="Logout",
-              font=("Segoe UI", 11, "bold"),
-              command=lambda:admin.dang_xuat(user_manager, admin_window),
-              bg="#e53935",
-              fg="white",
-              relief=tk.FLAT,
-              borderwidth=0,
-              padx=12,
-              pady=4
-              ).grid(row=0, column=2, padx=10, pady=10)
-    
-    # ========================== Xây Body ==========================
-    body_frame = tk.Frame(admin_window)
-    body_frame.pack(padx=10, pady=10, fill="both", expand=True)
-    
-    # ======== Xây Treeview ========
-    ds_user_frame = tk.Frame(body_frame)
-    ds_user_frame.grid(row=0, column=0, padx=10, pady=10, sticky="ewsn")
-    tree = ttk.Treeview(ds_user_frame, columns=("username"), show="headings")
-    tree.heading("username", text="Danh sách User")
-    tree.pack()
-    for username, info in users_data.items():
-        if info.get("role", "user") == "user":
-            tree.insert("", "end", values=(username,))
-    tree.bind("<<TreeviewSelect>>", chon_dong)
-
-    # ============ Xây dụng thống kê =============
-    thongke_frame = tk.Frame(body_frame)
-    thongke_frame.grid(row=0, column=1, padx=10, sticky="ewsn")
-    tk.Label(thongke_frame,
-             text="Thống kê",
-             font=("Segoe UI", 15, "bold"),
-             ).grid(row=0, column=0, columnspan=2, padx=10, sticky="w")
-    tk.Label(thongke_frame,
-             text="Username: ",
-             font=("Segoe UI", 13)
-             ).grid(row=1, column=0, padx=10, sticky="w")
-    username_var = tk.StringVar()
-    tk.Entry(thongke_frame,
-            textvariable=username_var,
-            font=("Segoe UI", 13),
-            state="readonly",
-            width=15
-            ).grid(row=1, column=1, padx=10, sticky="w", columnspan=2)
-    tk.Label(thongke_frame,
-             text="Số lượng Note: ",
-             font=("Segoe UI", 13)
-             ).grid(row=2, column=0, padx=10, sticky="w")
-    soluong_var = tk.StringVar()
-    tk.Entry(thongke_frame,
-            textvariable=soluong_var,
-            font=("Segoe UI", 13),
-            state="readonly",
-            width=15
-            ).grid(row=2, column=1, padx=10, sticky="w", columnspan=2)
-    tk.Label(thongke_frame,
-             text="Lịch sử tạo note",
-             font=("Segoe UI", 13)
-             ).grid(row=3, column=0, padx=10, sticky="w")
-    
-    # Treeview hiển thị note của user
-    notes_frame = tk.Frame(thongke_frame)
-    notes_frame.grid(row=4, rowspan=2, column=0, columnspan=2, padx=10, pady=10)
-    
-    notes_tree = ttk.Treeview(
-        notes_frame, 
-        columns=("title", "created_at", "updated_at"), 
-        show="headings",
-        height=6
-    )
-    notes_tree.heading("title", text="Tiêu đề")
-    notes_tree.heading("created_at", text="Ngày tạo")
-    notes_tree.heading("updated_at", text="Ngày sửa")
-    notes_tree.column("title", width=100)
-    notes_tree.column("created_at", width=200)
-    notes_tree.column("updated_at", width=200)
-    notes_tree.pack(expand=True)
-    
-    
-    admin_window.mainloop()
-
-
-
-    
+        if not messagebox.askyesno("Xác nhận", f"Bạn chắc chắn muốn cấp quyền ADMIN cho user '{username}'?"):
+            return
+        if self.admin.change_role(username):
+            messagebox.showinfo("Thành công!", f"Cấp quyền ADMIN cho user '{username}' thành công!")
+            self.cap_nhat_tree_users()
+            return
+        else:
+            messagebox.showerror("Lỗi", f"Cấp quyền ADMIN cho user '{username}' KHÔNG thành công!")

@@ -1,18 +1,24 @@
 {
     "minhtien": {
-        "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+        "password": "123",
         "notes": [
             {
                 "title": "Đi chợ",
                 "content": "- 3kg thịt\n- 2 con cá\n- 10 quả trứng",
                 "created_at": "2025-06-06T21:18:04.104758",
                 "updated_at": "2025-06-06T21:18:04.104758"
+            },
+            {
+                "title": "Bài tập về nhà",
+                "content": "Python\nCơ sở dữ liệu\nLịch sử đảng",
+                "created_at": "2025-06-07T14:20:54.314620",
+                "updated_at": "2025-06-07T14:20:54.314620"
             }
         ],
-        "role": "user"
+        "role": "admin"
     },
     "user02": {
-        "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+        "password": "123",
         "notes": [
             {
                 "title": "quanao",
@@ -24,25 +30,181 @@
         "role": "user"
     },
     "admin": {
-        "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+        "password": "123",
         "notes": [
-            {}
+            {
+                "title": "Suy nghĩ",
+                "content": "Viết nhật ký, đọc sách",
+                "created_at": "2025-06-01T17:51:45.270071",
+                "updated_at": "2025-06-01T17:51:45.270071"
+            }
         ],
         "role": "admin"
     },
     "user01": {
-        "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+        "password": "123",
+        "notes": [],
+        "role": "admin"
+    },
+    "user03": {
+        "password": "123",
         "notes": [],
         "role": "user"
     },
-    "user03": {
-        "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
-        "notes": [],
+    "user00": {
+        "password": "123",
+        "notes": [
+            {
+                "title": "Kế hoạch",
+                "content": "Lập kế hoạch tuần",
+                "created_at": "2025-06-07T17:51:45.270251",
+                "updated_at": "2025-06-07T17:51:45.270251"
+            }
+        ],
         "role": "user"
     },
     "user04": {
-        "password": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
-        "notes": [],
+        "password": "123",
+        "notes": [
+            {
+                "title": "Suy nghĩ",
+                "content": "Mua rau, thịt, cá",
+                "created_at": "2025-05-28T17:51:45.270271",
+                "updated_at": "2025-05-28T17:51:45.270271"
+            },
+            {
+                "title": "Suy nghĩ",
+                "content": "Học Python nâng cao",
+                "created_at": "2025-05-30T17:51:45.270281",
+                "updated_at": "2025-05-30T17:51:45.270281"
+            },
+            {
+                "title": "Công việc",
+                "content": "Tập thể dục",
+                "created_at": "2025-06-03T17:51:45.270300",
+                "updated_at": "2025-06-03T17:51:45.270300"
+            }
+        ],
+        "role": "user"
+    },
+    "user05": {
+        "password": "123",
+        "notes": [
+            {
+                "title": "Mua sắm",
+                "content": "Chuẩn bị bài giảng",
+                "created_at": "2025-06-03T17:51:45.270313",
+                "updated_at": "2025-06-03T17:51:45.270313"
+            },
+            {
+                "title": "Suy nghĩ",
+                "content": "Chuẩn bị bài giảng",
+                "created_at": "2025-05-30T17:51:45.270319",
+                "updated_at": "2025-05-30T17:51:45.270319"
+            },
+            {
+                "title": "Công việc",
+                "content": "Toán, Lý, Hóa",
+                "created_at": "2025-05-30T17:51:45.270325",
+                "updated_at": "2025-05-30T17:51:45.270325"
+            }
+        ],
+        "role": "user"
+    },
+    "user06": {
+        "password": "123",
+        "notes": [
+            {
+                "title": "Mua sắm",
+                "content": "Lập kế hoạch tuần",
+                "created_at": "2025-05-30T17:51:45.270334",
+                "updated_at": "2025-05-30T17:51:45.270334"
+            },
+            {
+                "title": "Ghi chú học tập",
+                "content": "Mua rau, thịt, cá",
+                "created_at": "2025-05-31T17:51:45.270340",
+                "updated_at": "2025-05-31T17:51:45.270340"
+            },
+            {
+                "title": "Công việc",
+                "content": "Mua rau, thịt, cá",
+                "created_at": "2025-06-01T17:51:45.270347",
+                "updated_at": "2025-06-01T17:51:45.270347"
+            }
+        ],
+        "role": "user"
+    },
+    "user07": {
+        "password": "123",
+        "notes": [
+            {
+                "title": "Công việc",
+                "content": "Mua rau, thịt, cá",
+                "created_at": "2025-05-29T17:51:45.270359",
+                "updated_at": "2025-05-29T17:51:45.270359"
+            },
+            {
+                "title": "Suy nghĩ",
+                "content": "Chuẩn bị bài giảng",
+                "created_at": "2025-05-30T17:51:45.270367",
+                "updated_at": "2025-05-30T17:51:45.270367"
+            },
+            {
+                "title": "Ghi chú học tập",
+                "content": "Chuẩn bị bài giảng",
+                "created_at": "2025-06-04T17:51:45.270374",
+                "updated_at": "2025-06-04T17:51:45.270374"
+            }
+        ],
+        "role": "user"
+    },
+    "user08": {
+        "password": "123",
+        "notes": [
+            {
+                "title": "Mua sắm",
+                "content": "Chuẩn bị bài giảng",
+                "created_at": "2025-05-31T17:51:45.270389",
+                "updated_at": "2025-05-31T17:51:45.270389"
+            }
+        ],
+        "role": "user"
+    },
+    "user09": {
+        "password": "123",
+        "notes": [
+            {
+                "title": "Mua sắm",
+                "content": "Mua rau, thịt, cá",
+                "created_at": "2025-05-28T17:51:45.270404",
+                "updated_at": "2025-05-28T17:51:45.270404"
+            },
+            {
+                "title": "Mua sắm",
+                "content": "Mua rau, thịt, cá",
+                "created_at": "2025-05-30T17:51:45.270409",
+                "updated_at": "2025-05-30T17:51:45.270409"
+            },
+            {
+                "title": "Kế hoạch",
+                "content": "Viết nhật ký, đọc sách",
+                "created_at": "2025-05-31T17:51:45.270413",
+                "updated_at": "2025-05-31T17:51:45.270413"
+            }
+        ],
+        "role": "user"
+    },
+    "user10": {
+        "password": "123",
+        "notes": [
+            {
+                "title": "Công việc",
+                "content": "Tập thể dục",
+                "created_at": "2025-05-30T17:51:45.270420",
+                "updated_at": "2025-05-30T17:51:45.270420"
+            }
+        ],
         "role": "user"
     }
 }
