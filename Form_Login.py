@@ -11,7 +11,7 @@ class Form_Login:
         # ========== CỬA SỔ ĐĂNG NHẬP ==========
         self.window = tk.Toplevel(parent_window)
         self.window.title("Đăng nhập")
-        self.window.geometry("350x260")
+        self.window.geometry("350x300")
         self.window.resizable(False, False)
         self.window.grab_set()  # Chặn tương tác với parent_window
 
@@ -36,11 +36,13 @@ class Form_Login:
         btn_frame.pack(pady=15)
 
         tk.Button(btn_frame, text="Đăng nhập", width=14, bg="#1976d2", fg="white", font=("Segoe UI", 10, "bold"),
-                  command=self.login_action, cursor="hand2").grid(row=0, column=0, padx=5, ipadx=2)
+                  command=lambda:self.login_action(), cursor="hand2").grid(row=0, column=0, padx=5, ipadx=2)
+                
         tk.Button(btn_frame, text="Đăng ký", width=10, bg="#43a047", fg="white", font=("Segoe UI", 10),
-                  command=self.open_register, cursor="hand2").grid(row=0, column=1, padx=5, ipadx=2)
+                  command=lambda:self.open_register(), cursor="hand2").grid(row=0, column=1, padx=5, ipadx=2)
+        
         tk.Button(btn_frame, text="Hủy", width=8, bg="#f44336", fg="white", font=("Segoe UI", 10),
-                  command=self.on_cancel, cursor="hand2").grid(row=0, column=2, padx=5, ipadx=2)
+                  command=lambda:self.on_cancel(), cursor="hand2").grid(row=0, column=2, padx=5, ipadx=2)
         self.window.protocol("WM_DELETE_WINDOW", self.on_cancel)
     
     def on_cancel(self):

@@ -2,24 +2,25 @@ import tkinter as tk
 from Class_Guest import Guest
 from Form_Note import Form_Note
 from Form_Login import Form_Login
+from Class_QuoteAPI import Class_QuoteAPI
 
 class Form_Main:
     def __init__(self):
         # ==== Color Palette ====
-        BG_COLOR = "#e3f2fd"          # Light blue
-        HEADER_COLOR = "#1976d2"      # Blue
-        BTN_LOGIN = "#1976d2"         # Main blue button
+        BG_COLOR = "#e3f2fd"
+        HEADER_COLOR = "#1976d2"
+        BTN_LOGIN = "#1976d2"
         BTN_LOGIN_HOVER = "#115293"
-        BTN_GUEST = "#43a047"         # Green
+        BTN_GUEST = "#43a047"
         BTN_GUEST_HOVER = "#388e3c"
-        BTN_EXIT = "#e53935"          # Red
+        BTN_EXIT = "#e53935"
         BTN_EXIT_HOVER = "#b71c1c"
         TEXT_COLOR = "white"
 
         # ==== Init Window ====
         self.root = tk.Tk()
         self.root.title("Ghi chú App")
-        self.root.geometry("400x340")
+        self.root.geometry("400x450")
         self.root.resizable(False, False)
         self.root.configure(bg=BG_COLOR)
 
@@ -69,7 +70,20 @@ class Form_Main:
         )
         btn_exit.pack(pady=20, ipady=3)
         style_button(btn_exit, BTN_EXIT, BTN_EXIT_HOVER)
-
+        
+        # ==== Quote Label ====
+        self.label_quote = tk.Label(
+            self.root,
+            text="",
+            font=("Segoe UI", 11, "italic"),
+            fg="#424242",
+            bg="#e3f2fd",
+            wraplength=360,
+            justify="center"
+        )
+        self.label_quote.pack(pady=(5, 0))
+        self.show_quote()
+        
         self.root.mainloop()
 
     def start_as_guest(self):
@@ -88,3 +102,9 @@ class Form_Main:
         else:
             from Form_Note import Form_Note
             Form_Note(user)
+            
+    def show_quote(self):
+        quoteAPI = Class_QuoteAPI()
+        quote, author = quoteAPI.get_quote()
+        self.label_quote.config(text=f'"{quote}"\n- {author} -')
+        quoteAPI.save_to_json()
