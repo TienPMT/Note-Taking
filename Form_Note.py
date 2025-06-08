@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, ttk
 from Class_Note import Note  
 from Form_NoteList import show_note_list
 from Form_SearchNote import search_note
@@ -27,7 +27,7 @@ class Form_Note:
 
         self.window = tk.Tk()
         self.window.title(f"Tạo ghi chú - {self.username}")
-        self.window.geometry("800x650")
+        self.window.geometry("800x720")
         self.window.configure(bg="#f0f6fb")
         self.window.resizable(False, False)
 
@@ -103,8 +103,26 @@ class Form_Note:
 
         # Đăng nhập/Đăng ký (chỉ guest)
         if self.is_guest:
+            # Thêm label cảnh báo to, nổi bật
+            lbl_guest_warning = tk.Label(
+                self.window,
+                text="⚠️ Bạn đang sử dụng quyền GUEST.\nDữ liệu sẽ không được lưu khi thoát chương trình!",
+                font=("Segoe UI", 13, "bold"),
+                bg="#f0f6fb",
+                fg="#e53935",  # Đỏ cảnh báo
+                justify="center")
+            
+            lbl_guest_warning.pack(pady=(8, 0))
             btn_login = tk.Button(self.window, text="🔑 Đăng nhập / Đăng ký", width=28, bg="#17a2b8", fg="white",
                                   font=("Segoe UI", 11), command=self.open_login_register, cursor="hand2", relief=tk.RAISED, borderwidth=0)
+            btn_login.pack(pady=10)
+            btn_login.bind("<Enter>", lambda e: btn_login.config(bg="#117a8b"))
+            btn_login.bind("<Leave>", lambda e: btn_login.config(bg="#17a2b8"))
+        
+        # Đổi Password (chỉ user)
+        if not self.is_guest:
+            btn_login = tk.Button(self.window, text="🔑 Đổi mật khẩu", width=28, bg="#17a2b8", fg="white",
+                                  font=("Segoe UI", 11), command=self.doi_password, cursor="hand2", relief=tk.RAISED, borderwidth=0)
             btn_login.pack(pady=10)
             btn_login.bind("<Enter>", lambda e: btn_login.config(bg="#117a8b"))
             btn_login.bind("<Leave>", lambda e: btn_login.config(bg="#17a2b8"))
@@ -173,3 +191,82 @@ class Form_Note:
         self.window.destroy()
         from Form_Main import Form_Main
         Form_Main()
+    
+    def doi_password(self):
+        username = self.username
+        # Lấy mật khẩu thật của user
+        users_data = self.user_manager.load_users()
+        user_password = users_data[username]['password']
+        
+        if user_password == "":
+            messagebox.showerror("Lỗi!", "Lỗi truy xuất mật khẩu cũ!")
+            return
+        
+        # ======= Giao diện hiện đại với ttk =======
+        change_password_window = tk.Toplevel(self.window)
+        change_password_window.geometry("370x320")
+        change_password_window.title("Đổi mật khẩu User")
+        change_password_window.resizable(False, False)
+        change_password_window.configure(bg="#f1f5f9")
+        change_password_window.grab_set()
+    
+        # Tiêu đề & icon
+        tk.Label(change_password_window, text="🔒", font=("Segoe UI Emoji", 28), bg="#f1f5f9").pack(pady=(18,0))
+        tk.Label(change_password_window, text="Đổi mật khẩu User", font=("Segoe UI", 16, "bold"), fg="#2563eb", bg="#f1f5f9").pack(pady=(4,14))
+    
+        frm = tk.Frame(change_password_window, bg="#f1f5f9")
+        frm.pack(expand=True, fill="both", padx=30, pady=6)
+    
+        # Trường nhập
+        tk.Label(frm, text="Mật khẩu cũ:", bg="#f1f5f9", anchor="w", font=("Segoe UI", 12)).grid(row=0, column=0, sticky="w", pady=5)
+        old_password_entry = ttk.Entry(frm, show="*")
+        old_password_entry.grid(row=0, column=1, pady=5, padx=10)
+    
+        tk.Label(frm, text="Mật khẩu mới:", bg="#f1f5f9", anchor="w", font=("Segoe UI", 12)).grid(row=1, column=0, sticky="w", pady=5)
+        new_password_entry = ttk.Entry(frm, show="*")
+        new_password_entry.grid(row=1, column=1, pady=5, padx=10)
+    
+        tk.Label(frm, text="Xác nhận mật khẩu:", bg="#f1f5f9", anchor="w", font=("Segoe UI", 12)).grid(row=2, column=0, sticky="w", pady=5)
+        new_password_confirm_entry = ttk.Entry(frm, show="*")
+        new_password_confirm_entry.grid(row=2, column=1, pady=5, padx=10)
+    
+        def xac_nhan():
+            old_password = old_password_entry.get().strip()
+            new_password = new_password_entry.get().strip()
+            new_password_confirm = new_password_confirm_entry.get().strip()
+    
+            if not old_password:
+                messagebox.showerror("Lỗi", "Mật khẩu cũ không được để trống!", parent=change_password_window)
+                return
+            if not new_password:
+                messagebox.showerror("Lỗi", "Mật khẩu mới không được để trống!", parent=change_password_window)
+                return
+            if old_password != user_password:
+                messagebox.showerror("Lỗi", "Mật khẩu cũ không đúng!", parent=change_password_window)
+                return
+            if old_password == new_password:
+                messagebox.showerror("Lỗi", "Mật khẩu mới không được trùng với mật khẩu cũ!", parent=change_password_window)
+                return
+            if new_password != new_password_confirm:
+                messagebox.showerror("Lỗi", "Mật khẩu xác nhận không khớp!", parent=change_password_window)
+                return
+    
+            if self.user_manager.change_password(username, new_password):
+                messagebox.showinfo("Thành công!", f"Đổi mật khẩu user '{username}' thành công!", parent=change_password_window)
+                change_password_window.destroy()
+            else:
+                messagebox.showerror("Lỗi!", f"Đổi mật khẩu user '{username}' không thành công!", parent=change_password_window)
+    
+        # Nút xác nhận
+        style = ttk.Style()
+        style.configure("Accent.TButton", font=("Segoe UI", 12, "bold"), background="#2563eb", foreground="white", padding=6)
+        style.map("Accent.TButton",
+                  background=[('active', '#1e40af'), ('!active', '#2563eb')],
+                  foreground=[('pressed', '#fff'), ('active', '#fff')])
+        ttk.Button(
+            change_password_window,
+            text="Xác nhận",
+            style="Accent.TButton",
+            command=xac_nhan
+        ).pack(pady=16)
+        

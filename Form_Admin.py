@@ -224,8 +224,6 @@ class Form_Admin:
             messagebox.showwarning("Thông báo", "Hãy chọn User cần đổi mật khẩu", parent=self.window)
             return
         username = self.tree.item(chon[0])['values'][0]
-        users_data = self.user_manager.load_users()
-        user_password = users_data[username]['password']
     
         # ======= Giao diện hiện đại với ttk =======
         change_password_window = tk.Toplevel(self.window)
@@ -243,10 +241,6 @@ class Form_Admin:
         frm.pack(expand=True, fill="both", padx=30, pady=6)
     
         # Trường nhập
-        tk.Label(frm, text="Mật khẩu cũ:", bg="#f1f5f9", anchor="w", font=("Segoe UI", 12)).grid(row=0, column=0, sticky="w", pady=5)
-        old_password_entry = ttk.Entry(frm, show="*")
-        old_password_entry.grid(row=0, column=1, pady=5, padx=10)
-    
         tk.Label(frm, text="Mật khẩu mới:", bg="#f1f5f9", anchor="w", font=("Segoe UI", 12)).grid(row=1, column=0, sticky="w", pady=5)
         new_password_entry = ttk.Entry(frm, show="*")
         new_password_entry.grid(row=1, column=1, pady=5, padx=10)
@@ -256,22 +250,13 @@ class Form_Admin:
         new_password_confirm_entry.grid(row=2, column=1, pady=5, padx=10)
     
         def xac_nhan():
-            old_password = old_password_entry.get().strip()
             new_password = new_password_entry.get().strip()
             new_password_confirm = new_password_confirm_entry.get().strip()
     
-            if not old_password:
-                messagebox.showerror("Lỗi", "Mật khẩu cũ không được để trống!", parent=change_password_window)
-                return
-            if not new_password:
+            if not new_password or not new_password_confirm:
                 messagebox.showerror("Lỗi", "Mật khẩu mới không được để trống!", parent=change_password_window)
                 return
-            if old_password != user_password:
-                messagebox.showerror("Lỗi", "Mật khẩu cũ không đúng!", parent=change_password_window)
-                return
-            if old_password == new_password:
-                messagebox.showerror("Lỗi", "Mật khẩu mới không được trùng với mật khẩu cũ!", parent=change_password_window)
-                return
+            
             if new_password != new_password_confirm:
                 messagebox.showerror("Lỗi", "Mật khẩu xác nhận không khớp!", parent=change_password_window)
                 return

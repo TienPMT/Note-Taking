@@ -1,6 +1,6 @@
 {
     "minhtien": {
-        "password": "123",
+        "password": "123456",
         "notes": [
             {
                 "title": "Đi chợ",
@@ -15,7 +15,7 @@
                 "updated_at": "2025-06-07T14:20:54.314620"
             }
         ],
-        "role": "admin"
+        "role": "user"
     },
     "user02": {
         "password": "123",
@@ -44,7 +44,7 @@
     "user01": {
         "password": "123",
         "notes": [],
-        "role": "admin"
+        "role": "user"
     },
     "user03": {
         "password": "123",

@@ -28,7 +28,7 @@ class Admin(User):
         users_data = UserManage.load_users()
         if username in users_data:
             users_data[username]['password'] = new_password
-            UserManage.users = users_data # xoá xong sẽ cập nhật lại file json
+            UserManage.users = users_data # đổi xong sẽ cập nhật lại file json
             UserManage.save_users() 
             return True
         else:

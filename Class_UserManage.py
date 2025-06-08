@@ -70,3 +70,11 @@ class UserManage:
         self.users[username]['notes'] = notes_to_save
         self.save_users()
         return True
+    
+    def change_password(self, username, new_password):
+        if username in self.users:
+            self.users[username]['password'] = new_password
+            self.save_users()
+            return True
+        else:
+            return False
