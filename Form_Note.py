@@ -204,7 +204,7 @@ class Form_Note:
         
         # ======= Giao diện hiện đại với ttk =======
         change_password_window = tk.Toplevel(self.window)
-        change_password_window.geometry("370x320")
+        change_password_window.geometry("370x360")
         change_password_window.title("Đổi mật khẩu User")
         change_password_window.resizable(False, False)
         change_password_window.configure(bg="#f1f5f9")
@@ -258,15 +258,23 @@ class Form_Note:
                 messagebox.showerror("Lỗi!", f"Đổi mật khẩu user '{username}' không thành công!", parent=change_password_window)
     
         # Nút xác nhận
-        style = ttk.Style()
-        style.configure("Accent.TButton", font=("Segoe UI", 12, "bold"), background="#2563eb", foreground="white", padding=6)
-        style.map("Accent.TButton",
-                  background=[('active', '#1e40af'), ('!active', '#2563eb')],
-                  foreground=[('pressed', '#fff'), ('active', '#fff')])
-        ttk.Button(
+        style = ttk.Style(change_password_window)
+        style.theme_use("clam")
+        style.configure(
+            "Accent.TButton",
+            font=("Segoe UI", 12, "bold"),
+            background="#2563eb",   # Xanh dương chủ đạo
+            foreground="white",
+            padding=10,
+            borderwidth=0
+        )
+
+        btn_xac_nhan = ttk.Button(
             change_password_window,
-            text="Xác nhận",
+            text="✅ Xác nhận",
             style="Accent.TButton",
-            command=xac_nhan
-        ).pack(pady=16)
+            command=xac_nhan,
+            cursor="hand2"
+        )
+        btn_xac_nhan.pack(pady=24, ipadx=12, ipady=4)
         

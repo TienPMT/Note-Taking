@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import tkinter as tk
 from tkinter import messagebox
 
@@ -67,7 +65,67 @@ class Form_NoteList:
             notes = getattr(self.user, 'notes', [])
             if index < len(notes):
                 note = notes[index]
-                messagebox.showinfo(f"Nội dung: {note.title}", note.content)
+    
+                # ====== Giao diện chi tiết ghi chú ======
+                detail_win = tk.Toplevel(self.window)
+                detail_win.title("Chi tiết ghi chú")
+                detail_win.geometry("480x400")
+                detail_win.configure(bg="#f8fafc")
+                detail_win.resizable(False, False)
+                detail_win.grab_set()
+    
+                # HEADER
+                header = tk.Frame(detail_win, bg="#f8fafc")
+                header.pack(fill="x", pady=(18, 0), padx=12)
+                tk.Label(header, text="📝", font=("Segoe UI Emoji", 32), bg="#f8fafc").pack(side="left", padx=(0, 8))
+                tk.Label(header, text="Chi tiết ghi chú", font=("Segoe UI", 17, "bold"), bg="#f8fafc", fg="#1976d2").pack(side="left", anchor="w")
+    
+                # Tiêu đề
+                tk.Label(detail_win, text="Tiêu đề:", font=("Segoe UI", 12, "bold"), bg="#f8fafc", fg="#111").pack(anchor="w", padx=28, pady=(18, 1))
+                lbl_title = tk.Label(detail_win, text=note.title, font=("Segoe UI", 13), bg="#f8fafc", fg="#1d3557", anchor="w", wraplength=400, justify="left")
+                lbl_title.pack(anchor="w", padx=36, pady=(0, 10))
+    
+                # Nội dung + Scrollbar
+                tk.Label(detail_win, text="Nội dung:", font=("Segoe UI", 12, "bold"), bg="#f8fafc", fg="#111").pack(anchor="w", padx=28, pady=(6, 1))
+                content_frame = tk.Frame(detail_win, bg="#e9ecef", bd=1, relief=tk.GROOVE)
+                content_frame.pack(padx=36, pady=(0, 18), fill="both", expand=False)
+    
+                # Scrollbar
+                scrollbar = tk.Scrollbar(content_frame, orient="vertical")
+                scrollbar.pack(side="right", fill="y", padx=(0, 4), pady=4)
+    
+                txt_content = tk.Text(
+                    content_frame,
+                    height=9, width=48,
+                    font=("Segoe UI", 12),
+                    bg="#e9ecef", fg="#223",
+                    bd=0, wrap="word",
+                    yscrollcommand=scrollbar.set,
+                    state="normal",  # Để insert nội dung
+                    cursor="arrow"
+                )
+                txt_content.pack(side="left", fill="both", expand=True, padx=(6,0), pady=4)
+                txt_content.insert("1.0", note.content)
+                txt_content.config(state="disabled")
+                scrollbar.config(command=txt_content.yview)
+    
+                # Nút đóng
+                btn_close = tk.Button(
+                    detail_win,
+                    text="Đóng",
+                    font=("Segoe UI", 11, "bold"),
+                    bg="#e53935",
+                    fg="white",
+                    width=12,
+                    relief=tk.FLAT,
+                    activebackground="#b71c1c",
+                    activeforeground="white",
+                    command=detail_win.destroy,
+                    cursor="hand2"
+                )
+                btn_close.pack(pady=8)
+    
+                detail_win.focus_force()
     
     def delete_note(self):
         notes = getattr(self.user, 'notes', [])
