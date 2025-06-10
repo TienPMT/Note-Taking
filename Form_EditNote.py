@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
-
 import tkinter as tk
 from tkinter import messagebox
+import datetime
 
 class Form_EditNote:
     def __init__(self, user, note, on_update=None):
@@ -84,15 +83,23 @@ class Form_EditNote:
     def save_changes(self):
         new_title = self.entry_title.get().strip()
         new_content = self.text_content.get("1.0", "end-1c").strip()
-
+        
         if not new_title or not new_content:
             messagebox.showwarning("Lỗi", "Vui lòng nhập đầy đủ tiêu đề và nội dung")
             return
 
         self.note.title = new_title
         self.note.content = new_content
-
+        self.note.updated_at = datetime.datetime.now().isoformat()
+        
         messagebox.showinfo("Thành công", "Ghi chú đã được cập nhật")
+        
+        # Sau khi note đã được chỉnh sửa, cần thực hiện:
+        from Class_UserManage import UserManage
+        manager = UserManage()
+        notes_dict_list = [n.to_dict() for n in self.user.notes]  # hoặc self.notes nếu bạn dùng biến này
+        manager.update_user_notes(self.user.username, notes_dict_list)
+        
         self.window.destroy()
 
         if self.on_update:
